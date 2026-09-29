@@ -8,7 +8,7 @@
 # Safe to re-run: the ruleset is updated in place when it already exists.
 set -euo pipefail
 
-repo="${QC_GITHUB_REPO:-OWNER/quant-core}"
+repo="${QC_GITHUB_REPO:-SatyamDave/quant-core}"
 apply=false
 ruleset_name="main-protection"
 # GitHub Actions app id; pins each required check to Actions so another app

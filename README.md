@@ -64,7 +64,7 @@ Prerequisites: Rust (stable), [uv](https://docs.astral.sh/uv/), [just](https://j
 Node.js 20+ and git. Optional: cargo-deny, cargo-audit, pip-audit.
 
 ```sh
-git clone https://github.com/OWNER/quant-core.git && cd quant-core
+git clone https://github.com/SatyamDave/quant-core.git && cd quant-core
 just setup        # fetch Rust crates and the research Python environment
 just agent-setup  # install the agent service's pinned npm packages
 just check        # fmt, lint, every test suite, audits

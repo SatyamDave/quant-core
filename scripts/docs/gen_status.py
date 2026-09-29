@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 STATUS_MD = ROOT / "docs" / "STATUS.md"
 GUIDE = ROOT / "docs" / "guide" / "quant-core-guide.html"
 START, END = "<!-- AUTO-STATUS:START -->", "<!-- AUTO-STATUS:END -->"
-REPO_URL = "https://github.com/OWNER/quant-core"
+REPO_URL = "https://github.com/SatyamDave/quant-core"
 
 
 def md_cell(text: str) -> str:

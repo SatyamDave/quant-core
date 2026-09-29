@@ -32,7 +32,7 @@
 - `max_daily_notional` was first sized to fit the replay fixture; the fixture now has its own limits file (#75).
 
 ## Learned
-<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/OWNER/quant-core/pull/N)) -->
+<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/SatyamDave/quant-core/pull/N)) -->
 
 ## See also
 - Rule: .claude/rules/risk-guard.md; agent: .claude/agents/risk-auditor.md

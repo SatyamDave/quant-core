@@ -11,7 +11,7 @@ You need Rust (stable), [uv](https://docs.astral.sh/uv/), [just](https://just.sy
 Node.js 20+ and git.
 
 ```sh
-git clone https://github.com/OWNER/quant-core.git && cd quant-core
+git clone https://github.com/SatyamDave/quant-core.git && cd quant-core
 just setup         # Rust crates + research Python environment
 just agent-setup   # agent service npm packages
 just check         # everything CI runs; should pass on a clean clone

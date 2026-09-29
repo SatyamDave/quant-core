@@ -35,7 +35,7 @@
 _None yet. Each entry links to the PR or postmortem where it bit us._
 
 ## Learned
-<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/OWNER/quant-core/pull/N)) -->
+<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/SatyamDave/quant-core/pull/N)) -->
 
 ## See also
 - schemas/decision/v1/*.schema.json (the handoff contract); engine/crates/risk/CLAUDE.md; engine/crates/oms/CLAUDE.md

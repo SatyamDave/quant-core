@@ -29,7 +29,7 @@
 - Before #30, `SimVenue` never reduced a level's displayed size after a fill and ignored queue position entirely, so shadow-mode P&L against it was systematically optimistic versus real depth. Fixed by tracking consumed size per level and a queue position per resting order.
 
 ## Learned
-<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/OWNER/quant-core/pull/N)) -->
+<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/SatyamDave/quant-core/pull/N)) -->
 
 ## See also
 - Skill: add-venue-adapter (engine/.claude/skills/), ADR-0003 (venue selection), ../../CLAUDE.md

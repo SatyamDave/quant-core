@@ -4,7 +4,7 @@
 
 # quant-core bootstrap spec (from the repo owner)
 
-Repo: https://github.com/OWNER/quant-core.
+Repo: https://github.com/SatyamDave/quant-core.
 Org name "quant-core"; platform codename "quant-core". The spec below says `quant-core/` for the repo root; that is this repo.
 
 ## 0. Operating rules
@@ -202,7 +202,7 @@ Small, fast, deterministic inference (linear, GBT → ONNX or hand-coded Rust). 
 9 automated discovery: RD-Agent/qlib in research/sandbox/ on schedule; factors enter same validation + registry path; count toward trial total.
 
 ## 10. Phase 7 — contributor experience
-README (what, 5-min quickstart `just setup && just check && just replay`, repo map, links). CONTRIBUTING (branch naming, conventional commits, PR size, protected zones, knowledge loop, using Claude Code here: start from working dir, use skills, /context). docs/onboarding/ day-1.md, week-1.md, how-this-repo-learns.md. GLOSSARY (order book, queue position, adverse selection, funding, deflated Sharpe, PBO, walk-forward, shadow mode, champion/challenger, more). PR template checklist (tests failing before fix, docs, bench results if hot path, replay passes, no protected-zone change or risk-auditor requested, registry link for research). Issue templates: bug, strategy idea (graveyard check), incident, security (points to private reporting). CODEOWNERS: protected zones → human owners, rest → maintainers (@OWNER). .devcontainer one-command env.
+README (what, 5-min quickstart `just setup && just check && just replay`, repo map, links). CONTRIBUTING (branch naming, conventional commits, PR size, protected zones, knowledge loop, using Claude Code here: start from working dir, use skills, /context). docs/onboarding/ day-1.md, week-1.md, how-this-repo-learns.md. GLOSSARY (order book, queue position, adverse selection, funding, deflated Sharpe, PBO, walk-forward, shadow mode, champion/challenger, more). PR template checklist (tests failing before fix, docs, bench results if hot path, replay passes, no protected-zone change or risk-auditor requested, registry link for research). Issue templates: bug, strategy idea (graveyard check), incident, security (points to private reporting). CODEOWNERS: protected zones → human owners, rest → maintainers (@SatyamDave). .devcontainer one-command env.
 
 ## 11. Templates
 docs/adr/0000-template.md (Status, Context, Decision, Alternatives, Consequences, Review date). strategies/_template/ (README: thesis, edge source, why it persists, capacity, kill criteria, current gate, owner; GATES.md numeric thresholds per gate; config.yaml; src/; tests/). docs/postmortems/0000-template.md (timeline, impact, root cause, what the system should have caught, action items with owners → each becomes test/rule/runbook). agents/tasks/0000-template.md (goal, inputs, allowed tools, output artifact, done criteria, budget).

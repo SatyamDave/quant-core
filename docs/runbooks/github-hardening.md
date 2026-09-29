@@ -46,8 +46,8 @@ The repo is private and owned by a user account. Checked with `gh api`:
 ## Verify
 
 ```bash
-gh api repos/OWNER/quant-core/rulesets
-gh api repos/OWNER/quant-core --jq .security_and_analysis
+gh api repos/SatyamDave/quant-core/rulesets
+gh api repos/SatyamDave/quant-core --jq .security_and_analysis
 ```
 
 Open a test PR that fails one required check and confirm the merge button is blocked.

@@ -6,7 +6,7 @@ Please do not open a public issue, PR or discussion for a vulnerability.
 
 Report it privately through GitHub security advisories: open the repository's **Security** tab
 and choose **Report a vulnerability** (or go to
-`https://github.com/OWNER/quant-core/security/advisories/new`). Include what is affected, how to
+`https://github.com/SatyamDave/quant-core/security/advisories/new`). Include what is affected, how to
 reproduce it, and what access it gives. Maintainers of a fork can turn private reporting on with
 `scripts/harden-repo.sh` or in the repository settings.
 

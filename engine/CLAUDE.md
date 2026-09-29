@@ -29,7 +29,7 @@
 _None yet. Each entry links to the PR or postmortem where it bit us._
 
 ## Learned
-<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/OWNER/quant-core/pull/N)) -->
+<!-- None yet. Entries arrive only through knowledge-sync PRs, newest first, max 15, format: - YYYY-MM-DD: <lesson> ([#N](https://github.com/SatyamDave/quant-core/pull/N)) -->
 
 ## See also
 - Skills: engine/.claude/skills/ (add-venue-adapter, add-order-type, latency-profile, replay-debug)

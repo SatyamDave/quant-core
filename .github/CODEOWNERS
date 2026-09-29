@@ -8,24 +8,24 @@
 # and the protected-zone lines below it take precedence.
 
 # Everything else, for now
-*                                    @OWNER
+*                                    @SatyamDave
 
 # Protected zones (root CLAUDE.md rule 3, plus autonomy/** per the bootstrap plan)
-/engine/crates/risk/**              @OWNER
-/config/limits/**                   @OWNER
-/ops/deploy/**                      @OWNER
-/.github/workflows/**               @OWNER
-/.claude/hooks/**                   @OWNER
-/.claude/settings.json              @OWNER
-/autonomy/**                        @OWNER
+/engine/crates/risk/**              @SatyamDave
+/config/limits/**                   @SatyamDave
+/ops/deploy/**                      @SatyamDave
+/.github/workflows/**               @SatyamDave
+/.claude/hooks/**                   @SatyamDave
+/.claude/settings.json              @SatyamDave
+/autonomy/**                        @SatyamDave
 
 # Autonomy Phase A additions (T3 per autonomy/POLICY.yaml, PR #3): the gate workflow and the
 # tests that pin its behavior are as sensitive as autonomy/ itself.
-/tests/autonomy/**                  @OWNER
-/tests/hooks/**                     @OWNER
-/.github/workflows/autonomy-gate.yml @OWNER
+/tests/autonomy/**                  @SatyamDave
+/tests/hooks/**                     @SatyamDave
+/.github/workflows/autonomy-gate.yml @SatyamDave
 
 # Checks the AI and knowledge loops read from main (T3 per autonomy/POLICY.yaml).
-/scripts/ci/ai_gate.py              @OWNER
-/tests/ci/**                        @OWNER
-/scripts/knowledge/scope_check.py   @OWNER
+/scripts/ci/ai_gate.py              @SatyamDave
+/tests/ci/**                        @SatyamDave
+/scripts/knowledge/scope_check.py   @SatyamDave
