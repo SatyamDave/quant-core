@@ -31,7 +31,7 @@ toml.workspace = true
 ed25519-dalek = "=3.0.0"
 # Already resolved transitively (rand's own dependency); depended on directly
 # here only to fill the signing key's 32 random bytes at process start.
-getrandom = "0.3"
+getrandom = "0.4"
 base64 = "0.23"
 
 [dev-dependencies]
