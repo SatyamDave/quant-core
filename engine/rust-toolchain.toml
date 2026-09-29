@@ -1,0 +1,7 @@
+# Floating: "stable" resolves to whatever stable Rust is current when rustup installs it, so CI,
+# the devcontainer and laptops can build with different compilers (verified locally on Homebrew
+# rustc 1.97.1, which has no rustup and ignores this file). ADR-0004 (Proposed) pins 1.98.1; that
+# change is prepared, not applied, in docs/proposals/0001-rust-toolchain-pin.patch.
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]

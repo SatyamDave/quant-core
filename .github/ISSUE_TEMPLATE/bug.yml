@@ -1,0 +1,42 @@
+name: Bug report
+description: Something in the repo, engine, or tooling isn't working as intended.
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Exact commands, config, and (if relevant) the fixture used. Never paste secrets, account numbers or real account data.
+      placeholder: |
+        just check
+        cargo test -p qc-orderbook
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Where it lives
+      description: Crate, directory, or workflow affected. Note if it touches a protected zone.
+    validations:
+      required: false
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Rust / Node / Python versions, commit SHA, and mode (sim, paper, replay, external).
+    validations:
+      required: false
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Does this affect replay determinism, a risk check, or anything else that could reach a live order? If yes, treat this as an incident instead (see the incident template) and halt trading first.
+    validations:
+      required: false

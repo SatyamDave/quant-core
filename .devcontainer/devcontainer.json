@@ -1,0 +1,21 @@
+{
+  "name": "quant-core",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "just setup",
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/usr/local/cargo/bin:/home/vscode/.local/bin"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "ms-python.python",
+        "charliermarsh.ruff"
+      ]
+    }
+  }
+}

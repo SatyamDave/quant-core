@@ -1,0 +1,51 @@
+name: Strategy proposal
+description: Propose a new strategy or signal to take through the lifecycle gates.
+labels: ["strategy-idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every strategy starts at the `idea` gate and moves through research → backtest → walk-forward → paper → canary → scaled (docs/strategies/writing-a-strategy.md). Do not include account numbers, positions, statements or any personal trading data. This is not a place for tips or investment advice.
+  - type: checkboxes
+    id: graveyard-check
+    attributes:
+      label: Graveyard check
+      description: Required before this idea is worth opening. Check docs/research/graveyard.md and the experiment registry (research/registry/) for anything similar.
+      options:
+        - label: I checked docs/research/graveyard.md and this idea (or something close enough to it) is not there, or I've explained below why it's worth revisiting anyway.
+          required: true
+  - type: textarea
+    id: thesis
+    attributes:
+      label: Thesis
+      description: What is the edge, and where does it come from (adverse selection, funding capture, queue-position advantage, etc.)?
+    validations:
+      required: true
+  - type: textarea
+    id: edge-source
+    attributes:
+      label: Why it should persist
+      description: Why hasn't this edge been arbitraged away already?
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data needed
+      description: What market data, at what granularity (L2/L3), over what history, is needed to test this?
+    validations:
+      required: false
+  - type: textarea
+    id: capacity
+    attributes:
+      label: Rough capacity estimate
+      description: Order-of-magnitude size this could run at before it moves the market or exhausts the edge. Fine to say "unknown, needs research."
+    validations:
+      required: false
+  - type: textarea
+    id: kill
+    attributes:
+      label: Kill criteria
+      description: Measurable conditions that would stop this strategy, in addition to the risk limits.
+    validations:
+      required: false

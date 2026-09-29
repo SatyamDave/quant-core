@@ -1,0 +1,57 @@
+# Flags a PR as a major architecture change (ADR-0040) and checks it documents itself:
+# scripts/docs/arch_check.py. Advisory today: nothing is a required check on this repo's
+# plan (root CLAUDE.md, "Guidance versus enforcement"), so a red run here does not block merge.
+#
+# The PR body is untrusted text: it is written to a file from an env var, never interpolated
+# into a shell command or `run:` string.
+name: arch-check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: arch-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Write the PR body to a file
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr-body.md"
+
+      - name: Collect changed files and diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-only --no-renames "$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/files.txt"
+          git diff --no-renames "$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/diff.txt"
+
+      - name: arch_check.py
+        env:
+          PR_ACTOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          set -uo pipefail
+          python3 scripts/docs/arch_check.py \
+            --files "$RUNNER_TEMP/files.txt" \
+            --body "$RUNNER_TEMP/pr-body.md" \
+            --diff "$RUNNER_TEMP/diff.txt" \
+            --actor "$PR_ACTOR" \
+            --claude-md CLAUDE.md | tee "$GITHUB_STEP_SUMMARY"
+          # tee always exits 0; the real result is arch_check.py's own exit code.
+          exit "${PIPESTATUS[0]}"

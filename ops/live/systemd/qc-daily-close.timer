@@ -1,0 +1,14 @@
+[Unit]
+Description=Run qc-daily-close.service once a day (issue #45 scheduling)
+# Not applied anywhere; see ops/live/README.md for install steps.
+
+[Timer]
+# 21:05 UTC: after US equity regular hours close (16:00 America/New_York = 20:00 or 21:00 UTC
+# depending on daylight saving), so the day's fills have settled before the close runs. Adjust to
+# the chosen instrument's own trading_hours (config/instruments/**) once one is picked.
+OnCalendar=*-*-* 21:05:00 UTC
+Persistent=true
+Unit=qc-daily-close.service
+
+[Install]
+WantedBy=timers.target

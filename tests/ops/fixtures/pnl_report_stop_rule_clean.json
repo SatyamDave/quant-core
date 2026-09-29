@@ -1,0 +1,10 @@
+{
+  "date": "2026-02-02",
+  "source": "reconciled",
+  "stop_rule": {
+    "triggered": false,
+    "reasons": [],
+    "thresholds": {"max_drawdown_usd": "50", "max_consecutive_days_behind_buy_and_hold": 5},
+    "thresholds_source": "placeholder thresholds, see scripts/reports/pnl_policy.toml"
+  }
+}

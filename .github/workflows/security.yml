@@ -1,0 +1,144 @@
+# Cross-language security scanners. Each job fails on High or Critical
+# findings (see SECURITY.md for the Medium policy).
+#
+# This repo is private and owned by a user account, so GitHub code scanning
+# (SARIF upload, CodeQL) is unavailable until the repo moves to an org with
+# GitHub Code Security. Jobs that need it run only when the repository
+# variable CODE_SCANNING is 'true'; every other job reports in the log and
+# fails the check directly.
+name: security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 5 * * 1"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  osv-scanner:
+    if: github.event_name != 'release'
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@a345acffa64b0eaede81a3d9aae6141214d9c8fc # v2.6.0
+    permissions:
+      # The reusable workflow's job declares these; upload only happens when
+      # code scanning is enabled.
+      actions: read
+      contents: read
+      security-events: write
+    with:
+      scan-args: |-
+        --lockfile=engine/Cargo.lock
+        --lockfile=research/uv.lock
+      upload-sarif: ${{ vars.CODE_SCANNING == 'true' }}
+      fail-on-vuln: true
+
+  semgrep:
+    if: github.event_name != 'release' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: semgrep/semgrep:1.177.0@sha256:acaac22ffc7b7cc5926de0751b223bce0b2491c33d18422fa72f632c78d81198
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Registry rulesets need no Semgrep login. ERROR is Semgrep's
+      # high-severity level; --error makes any such finding fail the job.
+      - run: >-
+          semgrep scan --metrics=off --error --severity ERROR
+          --config p/rust --config p/python --config p/github-actions
+          --config p/secrets --config p/dockerfile --config p/terraform
+
+  codeql:
+    if: vars.CODE_SCANNING == 'true' && github.event_name != 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+      security-events: write # upload CodeQL results
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [rust, python, actions]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          queries: security-extended
+      - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
+        with:
+          category: /language:${{ matrix.language }}
+
+  trivy:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: trivy fs (dependencies and secrets)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: "1"
+      - name: trivy config (Dockerfiles, Terraform, workflows)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: config
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          skip-setup-trivy: true
+
+  checkov:
+    if: github.event_name != 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Without a Prisma Cloud key checkov has no severities, so every failed
+      # check fails the job; suppressions need an inline justification.
+      - uses: bridgecrewio/checkov-action@444c9db6fa75e2d9c19ebf1fde7322089be9009e # v12.3125.0
+        with:
+          directory: ops/infra
+          framework: terraform
+          quiet: true
+          soft_fail: false
+
+  sbom:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write # attach the SBOM to the release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
+        with:
+          path: .
+          format: spdx-json
+          upload-release-assets: true

@@ -1,0 +1,23 @@
+# Placeholder fee assumption and stop-rule thresholds for `just report-pnl` (issue #70).
+# The stop-rule numbers are conservative placeholders. Set your own, written down and approved
+# by the operator, before the first real trade. This file's job is to make report-pnl's
+# stop-rule check real and testable; a "not triggered" result is not an approval.
+# Tightening these numbers needs no approval; loosening does, by the same logic as root
+# CLAUDE.md rule 4 (this file is outside config/limits/**, the protected zone for venue risk limits).
+
+[fees]
+# Placeholder execution-cost assumption (basis points of notional per fill), applied identically
+# to the agent and the buy-and-hold baseline so the comparison stays fair. No venue is chosen yet
+# (config/venues/ is empty; ADR-0003/ADR-0020 are still Proposed), so there is no real fee
+# schedule to read here yet — replace this once one exists.
+fee_bps = "10"
+
+[stop_rule]
+# Placeholder: size max_drawdown_usd as a small fraction of the capital you fund the canary
+# account with, so the stop rule trips long before the account is gone.
+max_drawdown_usd = "5"
+max_consecutive_days_behind_buy_and_hold = 5
+# Take-profit placeholder: stop trading for good once cumulative realized+unrealized profit
+# (after fees) reaches this target. Loosening this number needs the same human approval as any
+# other protected limit (root CLAUDE.md rule 4); tightening it does not.
+take_profit_usd = "400"

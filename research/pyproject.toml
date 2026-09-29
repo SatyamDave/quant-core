@@ -1,0 +1,57 @@
+[project]
+name = "qc-research"
+version = "0.1.0"
+description = "quant-core research and ML environment (research/ and ml/)"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy==2.5.3",
+    "pyarrow==25.0.1",
+    "pyyaml==6.0.3",
+    "scikit-learn==1.9.1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+    "types-pyyaml==6.0.12.20260906",
+]
+
+[tool.uv]
+# Not an installable package: research/ and ../ml are imported from source via
+# pytest's pythonpath, so one lockfile and one venv serve both.
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = [".", ".."]
+testpaths = ["tests", "../ml/tests", "../data"]
+addopts = ["--import-mode=importlib", "--strict-markers"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "PTH", "RUF"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S311"]
+"../ml/tests/**" = ["S101", "S311"]
+"../data/**/tests/**" = ["S101", "S311"]
+"../tests/**" = ["S101"]
+# Seeded, deterministic simulation; not a security use of randomness.
+"../data/recorders/synthetic.py" = ["S311"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["registry", "ml", "data"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = ["."]
+
+[[tool.mypy.overrides]]
+# No type stubs are published for these; their call sites are covered by tests.
+module = ["sklearn.*", "pyarrow.*"]
+ignore_missing_imports = true

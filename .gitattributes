@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+Cargo.lock linguist-generated=true
+uv.lock linguist-generated=true
+
+*.parquet binary
+*.onnx binary
+*.png binary

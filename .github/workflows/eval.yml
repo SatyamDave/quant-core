@@ -1,0 +1,107 @@
+# Eval harness (evals/README.md). Tier 1 (free, deterministic; `just eval`) runs on every PR and
+# every push to main. Tier 2 (paid, gated by scripts/ci/ai_gate.py and ANTHROPIC_API_KEY) adds a
+# second job on push to main, the nightly schedule, and manual dispatch — never on a PR, per the
+# cost/nondeterminism reasoning in evals/README.md. Job names: keep in sync with
+# scripts/harden-repo.sh's required_checks if this workflow is ever added to it (not required
+# today; branch rulesets 403 on this plan, see root CLAUDE.md "Guidance versus enforcement").
+name: eval
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 8 * * *" # nightly, off-peak UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  tier1:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Installs the channel and components from engine/rust-toolchain.toml.
+      - working-directory: engine
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: engine
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          working-directory: research
+          enable-cache: true
+          cache-dependency-glob: research/uv.lock
+      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+        with:
+          tool: just
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: agent/package-lock.json
+      - run: just setup
+      - run: just agent-setup
+      - run: just eval
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: eval-report
+          path: out/eval
+          if-no-files-found: warn
+          retention-days: 30
+
+  tier2:
+    needs: tier1
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - working-directory: engine
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: engine
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          working-directory: research
+          enable-cache: true
+          cache-dependency-glob: research/uv.lock
+      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+        with:
+          tool: just
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: agent/package-lock.json
+      - run: just setup
+      - run: just agent-setup
+      # scripts/eval/live_agent.py reads autonomy/POLICY.yaml through scripts/ci/ai_gate.py itself
+      # and exits 0 with "skipped: gated off" unless both the policy allows loop-agent-eval and
+      # ANTHROPIC_API_KEY is set — true everywhere today (docs/reports/base-status.md item 6).
+      - name: Tier 2 live agent eval (gated)
+        env:
+          AUTONOMY_ENABLED: ${{ vars.AUTONOMY_ENABLED }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python3 scripts/eval/live_agent.py
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: agent-eval-ledger
+          path: evals/ledger
+          if-no-files-found: ignore
+          retention-days: 30

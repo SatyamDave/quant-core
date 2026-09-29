@@ -1,0 +1,7 @@
+# Local development: replay and backtests only, no venue connections.
+# No secrets here: credentials are injected at runtime from the secret manager.
+
+name = "dev"
+real_orders = false
+limits = "config/limits/default.toml"
+kill_switch_max_ms = 1000

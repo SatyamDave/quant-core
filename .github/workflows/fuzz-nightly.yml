@@ -1,0 +1,45 @@
+# Nightly cargo-fuzz smoke pass over every target in engine/fuzz. Skips with a
+# notice until the first target exists (engine-core phase adds them).
+name: fuzz-nightly
+
+on:
+  schedule:
+    - cron: "23 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fuzz-nightly
+  cancel-in-progress: false
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Find fuzz targets
+        id: targets
+        run: |
+          if [ -f engine/fuzz/Cargo.toml ] && ls engine/fuzz/fuzz_targets/*.rs >/dev/null 2>&1; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::skip: no cargo-fuzz targets under engine/fuzz yet"
+          fi
+      - if: steps.targets.outputs.found == 'true'
+        run: rustup toolchain install nightly --profile minimal
+      - if: steps.targets.outputs.found == 'true'
+        run: cargo +nightly install --locked cargo-fuzz
+      - if: steps.targets.outputs.found == 'true'
+        working-directory: engine/fuzz
+        run: |
+          for target in $(cargo +nightly fuzz list); do
+            echo "::group::$target"
+            cargo +nightly fuzz run "$target" -- -max_total_time=120
+            echo "::endgroup::"
+          done

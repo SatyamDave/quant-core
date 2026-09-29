@@ -1,0 +1,41 @@
+name: Incident
+description: Something went wrong in a way that touched (or could have touched) real trading — a bad fill, a venue outage, a kill switch trip, a reconciliation mismatch.
+labels: ["incident"]
+body:
+  - type: input
+    id: when
+    attributes:
+      label: When it started (and, if resolved, when)
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Timeline of what was observed, in order.
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What was affected — a strategy, an environment, capital, data integrity. Include whether the kill switch was used.
+    validations:
+      required: true
+  - type: textarea
+    id: runbook
+    attributes:
+      label: Runbook followed
+      description: Which docs/runbooks/ page you followed, and where it did or didn't match reality.
+    validations:
+      required: false
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: Root cause (fill in once known)
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Once resolved, write a postmortem using docs/postmortems/0000-template.md. Every action item there should become a test, a rule, or a runbook update — link it back to this issue.

@@ -1,0 +1,28 @@
+[package]
+name = "qc-benches"
+description = "Criterion benchmarks for engine hot paths"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+criterion.workspace = true
+qc-core.workspace = true
+qc-orderbook.workspace = true
+qc-risk.workspace = true
+toml.workspace = true
+
+[[bench]]
+name = "orderbook"
+harness = false
+
+[[bench]]
+name = "risk"
+harness = false

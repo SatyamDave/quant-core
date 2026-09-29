@@ -1,0 +1,24 @@
+# Default per-strategy risk limits. Protected zone: human approval required.
+# Limits may be tightened automatically; loosening needs two human approvals.
+# Amounts are decimal strings parsed as fixed-point, never floats.
+# These are deliberately tiny: a strategy gets larger limits only through its own file and the gates.
+
+max_position = "0.01"        # base units per instrument (e.g. 0.01 BTC)
+max_notional = "25"          # quote currency per order
+max_order_rate_per_sec = 5
+max_daily_loss = "5"         # quote currency; trading halts at this loss
+price_band_bps = 50          # reject orders more than 0.5% from the reference price
+stale_data_ms = 1000         # halt order entry when market data is older than this
+
+# Agentic dollar cap (#41): many broker accounts have no platform-side spending
+# cap, so this is the only enforcement. A placeholder (set the operator's actual
+# agreed number), kept a small multiple of max_notional like every other default in this
+# file ("deliberately tiny"). tests/replay/sample_day.csv exercises far more notional than
+# this in one simulated day (~$92k) by design (it stresses the engine, not this account's
+# real spending pattern) and uses tests/replay/limits.toml instead, so it is not a reason to
+# loosen the real default. Tighten only, per rule 4, once #23 lands.
+max_daily_notional = "50"    # quote currency; cumulative notional of accepted orders per exchange day. pending #23
+
+# Wash-trade detection window (#40): a completed fill of the opposite side, same price and
+# same quantity, inside this window after one of our own fills is a wash-trade pattern.
+wash_trade_window_ms = 2000

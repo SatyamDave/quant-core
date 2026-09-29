@@ -1,0 +1,35 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+target/
+.venv/
+__pycache__/
+*.pyc
+data/raw/
+backtest/reports/raw/
+mlruns/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+.ipynb_checkpoints/
+data/**/*.parquet
+*.pem
+*.key
+secrets/
+.idea/
+.vscode/
+# Scratch outputs of demo and smoke runs (just walkforward without --record)
+out/
+# Tier 2 live-agent-eval ledger (scripts/eval/live_agent.py): CI artifact only,
+# never committed unless a human deliberately records a result (evals/README.md).
+evals/ledger/*.jsonl
+# agent/ (TypeScript agent service, ADR-0040): installed deps, build output, decision ledger.
+# out/agent is already covered by out/ above; listed for clarity since it's this package's output.
+agent/node_modules/
+agent/dist/
+out/agent/
+# ops/live (#63): runtime-only halt marker, alert-dedup state and process logs -- never committed.
+ops/live/state/
+ops/live/logs/

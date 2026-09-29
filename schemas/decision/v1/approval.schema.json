@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quant-core.local/schemas/decision/v1/approval.schema.json",
+  "title": "Approval",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "payload",
+    "signature"
+  ],
+  "properties": {
+    "payload": {
+      "type": "string",
+      "description": "Canonical JSON string, keys sorted, no whitespace: client_order_id, expires_ts_ns, instrument, limit_price, qty, request_id, side, time_in_force."
+    },
+    "signature": {
+      "type": "string",
+      "description": "Base64 (standard alphabet, padded) Ed25519 signature over the UTF-8 bytes of \"payload\"."
+    }
+  }
+}

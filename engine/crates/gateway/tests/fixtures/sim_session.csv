@@ -1,0 +1,4 @@
+# SimVenue fixture: a snapshot, one trade through a resting bid, then a delta.
+S,1,100,1000,1000,100@2;99.9@1,100.1@1;100.2@3
+T,1,S,99.9,0.2,2000,2000
+D,1,101,S,100.1,0,3000,3000

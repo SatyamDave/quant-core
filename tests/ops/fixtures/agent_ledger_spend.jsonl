@@ -1,0 +1,2 @@
+{"request": {"request_id": "r1", "ts_ns": 1767225600000000000, "instrument": "1"}, "decision": {"request_id": "r1", "action": "no_trade", "rationale": "test fixture"}, "result": null, "mode": "live", "prompt_version": "decide-v1", "model": "claude-sonnet-5", "cost_usd": 2.1}
+{"request": {"request_id": "r2", "ts_ns": 1767229200000000000, "instrument": "1"}, "decision": {"request_id": "r2", "action": "no_trade", "rationale": "test fixture"}, "result": null, "mode": "live", "prompt_version": "decide-v1", "model": "claude-sonnet-5", "cost_usd": 2.2}

@@ -1,0 +1,7 @@
+# Scaled capital, after the canary gate passes and a human approves.
+# No secrets here: credentials are injected at runtime from the secret manager.
+
+name = "prod"
+real_orders = true
+limits = "config/limits/default.toml"
+kill_switch_max_ms = 1000

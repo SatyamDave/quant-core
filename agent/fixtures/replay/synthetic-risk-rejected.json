@@ -1,0 +1,67 @@
+{
+  "request": {
+    "request_id": "fixture-risk-rejected-001",
+    "ts_ns": 1767571202000000000,
+    "instrument": "SIM-ETF",
+    "best_bid": "99.80",
+    "best_ask": "99.84",
+    "mid": "99.82",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.6 },
+    "signal": {
+      "direction": "down",
+      "probs": [0.79, 0.12, 0.09],
+      "model_sha256": "10a5ed9097e81674fdc5d3d996cec878ee0fd66f7d4a0eb8f7a7a65869713cb1"
+    },
+    "position": "0",
+    "limits": {
+      "max_position": "10",
+      "max_notional": "100000",
+      "max_order_rate_per_sec": 5,
+      "remaining_daily_loss": "1000"
+    },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  "decision": {
+    "request_id": "fixture-risk-rejected-001",
+    "action": "sell",
+    "qty": "50",
+    "limit_price": "99.80",
+    "confidence": 0.79,
+    "rationale": "signal down at max prob 0.7900; sized without checking max_position (confidence is advisory only, never a risk clamp)"
+  },
+  "result": { "accepted": false, "risk_reject": "qty 50 exceeds max_position 10" },
+  "mode": "live",
+  "prompt_version": "v1",
+  "model": "synthetic-fixture-do-not-treat-as-live",
+  "raw": {
+    "synthetic": true,
+    "note": "Hand-authored fixture for issue #36 (agent decision replay layer): the case where the decider proposes a decision the deterministic risk engine correctly rejects downstream, demonstrating risk is authoritative over whatever the decider proposes (ADR-0040 Decision §1). No real Anthropic API call was made to produce this — see agent/fixtures/replay/README.md.",
+    "sdk_messages": [
+      { "type": "system", "subtype": "init", "model": "synthetic-fixture-do-not-treat-as-live" },
+      {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "name": "mcp__decision__submit_order_intent",
+              "input": {
+                "request_id": "fixture-risk-rejected-001",
+                "action": "sell",
+                "qty": "50",
+                "limit_price": "99.80",
+                "confidence": 0.79,
+                "rationale": "signal down at max prob 0.7900; sized without checking max_position (confidence is advisory only, never a risk clamp)"
+              }
+            }
+          ]
+        }
+      },
+      { "type": "result", "subtype": "success", "total_cost_usd": 0.0035 }
+    ]
+  },
+  "cost_usd": "0.0035",
+  "latency_ms": 1610
+}

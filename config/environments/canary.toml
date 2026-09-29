@@ -1,0 +1,22 @@
+# Real orders with tiny capital, after the paper gate passes and a human approves.
+# No secrets here: credentials are injected at runtime from the secret manager.
+# scripts/ops/preflight.py (#50/#51) reads this file before `just preflight-live` will let this
+# environment start: `limits` is the ceiling every instrument's own config/limits/*.toml must fit
+# under, `kill_file` must be set, and `order_types_allowed` must stay exactly ["limit"] for this
+# milestone (#50: "only limit orders can be constructed").
+
+name = "canary"
+real_orders = true
+# Canary caps live in that file: $25 per order (max_notional) and $50 per day
+# (max_daily_notional). Keep them at or below what you can afford to lose in a canary account.
+limits = "config/limits/default.toml"
+kill_switch_max_ms = 1000
+
+# #44: qc-bridge's --kill-file watcher path for this environment. ops/live wiring (#63) is what actually passes `--kill-file` to the real binary; this is the one place that path
+# is decided, so preflight and the live host read the same value instead of two.
+kill_file = "ops/live/state/KILL"
+
+# #50: this milestone constructs limit orders only, no market orders. Enforcement is in the
+# broker adapter (agent/src/broker/**); this is the environment-level declaration a preflight
+# check and that adapter both read, so "limit orders only" is decided in one place.
+order_types_allowed = ["limit"]

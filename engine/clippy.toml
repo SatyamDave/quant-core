@@ -1,0 +1,6 @@
+# Money is fixed-point; floats in engine code are reviewed case by case.
+disallowed-types = [
+  { path = "std::collections::HashMap", reason = "iteration order is random; use BTreeMap or an indexed Vec so replay stays deterministic" },
+  { path = "std::collections::HashSet", reason = "iteration order is random; use BTreeSet so replay stays deterministic" },
+]
+doc-valid-idents = ["PnL", ".."]

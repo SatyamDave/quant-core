@@ -1,0 +1,127 @@
+# Build, lint, test and dependency audit for every PR and every push to main.
+# Job names are the required status checks set by scripts/harden-repo.sh;
+# renaming a job means updating that script in the same PR.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: engine
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Installs the channel and components from engine/rust-toolchain.toml.
+      - run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: engine
+      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+        with:
+          tool: cargo-deny,cargo-audit
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo deny --locked check
+      - run: cargo audit --deny warnings
+
+  miri:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Miri only adds value where there is unsafe code; the workspace denies
+      # unsafe_code today, so this normally reports a skip.
+      - name: Find unsafe code
+        id: unsafe
+        run: |
+          if grep -rlw --include='*.rs' 'unsafe' engine/crates engine/benches; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::skip: no crate contains unsafe, Miri not needed"
+          fi
+      - if: steps.unsafe.outputs.found == 'true'
+        run: rustup toolchain install nightly --profile minimal --component miri
+      - if: steps.unsafe.outputs.found == 'true'
+        working-directory: engine
+        run: cargo +nightly miri test --workspace --locked --exclude qc-benches
+
+  python:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: research
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          working-directory: research
+          enable-cache: true
+          cache-dependency-glob: research/uv.lock
+      - run: uv sync --locked
+      - run: uv run --locked ruff check . ../ml
+      - run: uv run --locked ruff format --check . ../ml
+      - run: uv run --locked mypy --strict registry ../ml
+      - run: uv run --locked pytest
+      # tests/autonomy lands in a separate PR; run it once it exists.
+      - name: pytest tests/autonomy
+        run: |
+          if [ -d ../tests/autonomy ]; then
+            uv run --locked pytest -c pyproject.toml ../tests/autonomy
+          else
+            echo "::notice::skip: tests/autonomy does not exist yet"
+          fi
+      - name: pip-audit
+        run: |
+          uv export --locked --format requirements-txt --no-hashes --quiet > "$RUNNER_TEMP/requirements.txt"
+          uvx pip-audit==2.10.1 --strict -r "$RUNNER_TEMP/requirements.txt"
+      - name: bandit
+        run: uvx bandit==1.9.4 -r . ../ml -x ./.venv,./tests --severity-level medium --confidence-level medium
+
+  just-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - working-directory: engine
+        run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: engine
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          working-directory: research
+          enable-cache: true
+          cache-dependency-glob: research/uv.lock
+      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+        with:
+          tool: just,cargo-deny,cargo-audit
+      - run: uv tool install pip-audit==2.10.1
+      - run: just setup
+      - run: just check

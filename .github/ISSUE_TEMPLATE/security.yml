@@ -1,0 +1,22 @@
+name: Security issue (non-sensitive only)
+description: A security concern that is safe to discuss in a public-visible issue. For anything involving an actual vulnerability, an exposed secret, or exploit details, use private reporting instead (see below) — do not open this template.
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Stop:** if this report includes a real secret, a working exploit, or a vulnerability that isn't already public knowledge, do not file it here. Use this repository's private vulnerability reporting (Security tab → "Report a vulnerability") instead, per SECURITY.md. This template is only for security *hardening suggestions* or already-public issues (e.g. a known-vulnerable pinned dependency version with a public CVE).
+  - type: textarea
+    id: concern
+    attributes:
+      label: Concern
+      description: The hardening suggestion or already-public issue.
+    validations:
+      required: true
+  - type: textarea
+    id: reference
+    attributes:
+      label: Public reference
+      description: CVE, advisory, or other public link, if applicable.
+    validations:
+      required: false

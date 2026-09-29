@@ -1,0 +1,57 @@
+{
+ "api_base": "https://external-api.kalshi.com/trade-api/v2",
+ "catalog_written_at": "2026-09-27T23:28:55Z",
+ "dataset": "study-0001",
+ "files": {
+  "cutoff.json": "8a3f7cecbee9df459928d04b5c09c0472d05ae4b8aaa412632925a9c9315d46c",
+  "listing/manifest.json": "f0385fd83cf1dddbd18c47a44ec8c48e218a43bb0de02a9983e27a6e62af0768",
+  "listing/tmp_2026-09-10_0.json": "d414fc3ce5f9e173f40f3d02569601fb29858c88f5faabc9d7633b79ad84709f",
+  "listing/tmp_2026-09-10_1.json": "9ee6a10349b78ee204ed0d8937319a969c982cf4a6a56a76663a95cec596401f",
+  "listing/tmp_2026-09-10_2.json": "e1b79c55a46c6a3e195f0bab8bffb7496d9d4bfb182dded7ad22465386abb3bb",
+  "listing/tmp_2026-09-10_3.json": "74f55e621491ccc41ae7da952421b81c95348d6dd229183e27f2c7f82f780156",
+  "listing/tmp_2026-09-10_4.json": "fdab07a001378699e47b1df5d1d955b09225b59ba9701272879da2bff57e2ece",
+  "listing/tmp_2026-09-10_5.json": "1b814d0bb4905ba7002d163afbc06174846e42ef6af8ab907493f7a910f0871b",
+  "listing/tmp_2026-09-10_6.json": "499e33669103cf053fb7a464d2c41a902bd351759d4490c21eaa97efa5a848a2",
+  "probe/cutoff.json": "8a3f7cecbee9df459928d04b5c09c0472d05ae4b8aaa412632925a9c9315d46c",
+  "probe/open_markets.json": "db4b9674298b255cc60baa954696dff1bac602c68f699c5bf55df5fc800aad6a",
+  "probe/open_markets_p0.json": "7e1b983ce95bb7ad152de0ef01cb2fbf1dbe7b0f00386c22bed467d7e9fd0138",
+  "probe/open_markets_p1.json": "3b8fcd533c0d3036b9d8accd76ff5b9fde3e2de6a7068b66cdc5224f37da62b6",
+  "probe/open_markets_p2.json": "a6bff4a230015e1af08f04240cea2193abde7f1c461539d648d07d73c220394c",
+  "probe/trades_order.json": "23efdcea1abd901711efd69a3e5f64052082597c0504a7fdc5e8e7393b957273",
+  "series/series.json": "a38b04b60dd43a4c81ee484c181758dd1d6f4e49a5e465cb00396cf7cfa035e1",
+  "trades/sampled.json": "614054b86a8b44a89cfba4cc4ad6e0336b8fe9a9beac22384d6e399e3e3412d8"
+ },
+ "first_request_at": "2026-09-27T23:07:37Z",
+ "first_settled_outcome_fetch_at": "2026-09-27T23:13:18Z",
+ "historical_cutoff_at_fetch": {
+  "market_positions_last_updated_ts": "2026-07-29T00:00:00Z",
+  "market_settled_ts": "2026-07-29T00:00:00Z",
+  "orders_updated_ts": "2026-09-13T00:00:00Z",
+  "trades_created_ts": "2026-07-29T00:00:00Z"
+ },
+ "last_request_at": "2026-09-27T23:27:26Z",
+ "ledger_sha256": "1898cf1317d4234204f7912f3d90ef63d06e7de7189ee29c00a5b3f481d06b08",
+ "listing_params": {
+  "endpoint": "/markets",
+  "max_pages_per_day": 12,
+  "params": {
+   "limit": 1000,
+   "mve_filter": "exclude",
+   "status": "settled"
+  },
+  "slice": "one UTC day per min_settled_ts/max_settled_ts pair",
+  "window_settled_utc": [
+   "2026-08-01T00:00:00Z",
+   "2026-09-20T00:00:00Z"
+  ]
+ },
+ "location": "data/raw/study-0001 (gitignored; hashes only here)",
+ "openapi_sha256": "1e0a942c4fb39ea48dac12c8fde51fd9a9ce81f4f43a91637529be2c5624ed02",
+ "openapi_version": "3.31.0",
+ "record_counts": {
+  "listed_markets": 0,
+  "trade_files": 0
+ },
+ "requests_non_200": 2,
+ "requests_total": 497
+}

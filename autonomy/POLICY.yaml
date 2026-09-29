@@ -1,0 +1,237 @@
+# quant-core autonomy policy. Protected: humans only, two approvals (T3).
+#
+# Format: this file is JSON-compatible YAML (flow style plus # comments) so
+# autonomy/classify.py can read it with the Python standard library alone.
+# Keep it that way: quoted keys and strings, no trailing commas, no anchors.
+#
+# Governing principle: autonomy is earned per category, measured
+# continuously, and revoked automatically. Every default below is the
+# cautious end of its range; loosening any value is a T3 change backed by
+# Phase G metrics (docs/plans/0002-autonomy.md).
+{
+  "version": 1,
+
+  # Global off switch. Every loop exits in its first step when this is false,
+  # when autonomy/PAUSE exists on main, or when the repo variable
+  # AUTONOMY_ENABLED is "false". Off by default: no loop may run before the
+  # bootstrap PRs merge and the Phase H breakers exist.
+  "enabled": false,
+  "pause_file": "autonomy/PAUSE",
+  "pause_repo_variable": "AUTONOMY_ENABLED",
+
+  # Unmatched paths land here. T2 (one human) rather than T0/T1 so a new
+  # directory never gains autonomy by accident.
+  "default_tier": "T2",
+
+  "tiers": {
+    # T0: records and knowledge that cannot affect runtime.
+    "T0": {
+      # Zero human approvals: T0 is the one category allowed to merge on
+      # green checks. Everything else needs a person.
+      "human_approvals": 0,
+      "agent_reviews": [],
+      # The only auto-merge enabled at launch. Phase B turns the switch into
+      # an action (it needs the bot token); Phase A only reports.
+      "auto_merge_enabled": true
+    },
+    # T1: agent-reviewed auto-merge (tests, flaky quarantine, Dependabot
+    # patch bumps, doc fixes, skill wording).
+    "T1": {
+      # One human while agent-reviewed auto-merge is off. Drops to 0 only in
+      # the same T3 PR that flips auto_merge_enabled, with Phase G numbers.
+      "human_approvals": 1,
+      "agent_reviews": ["code-reviewer"],
+      # Disabled: there is no code-reviewer track record or eval suite yet
+      # (Phases E and G), so nothing earns T1 auto-merge on day one.
+      "auto_merge_enabled": false
+    },
+    # T2: one human (research code, ML pipeline, new skills/agents,
+    # pre-live strategy code, non-protected engine code).
+    "T2": {
+      "human_approvals": 1,
+      "agent_reviews": [],
+      "auto_merge_enabled": false
+    },
+    # T3: protected zones, promotions past shadow/paper, autonomy/ itself.
+    "T3": {
+      # Two humans, matching rule 4 (loosening needs two approvals).
+      "human_approvals": 2,
+      # Phase A: satisfied by the label "agent-approved:risk-auditor".
+      # Phase B replaces the label with a review from the bot identity.
+      "agent_reviews": ["risk-auditor"],
+      "auto_merge_enabled": false
+    }
+  },
+
+  # Always T3, checked before any rule below, so reordering or editing the
+  # rules can never unprotect these. The first seven are the bootstrap
+  # protected zones (spec rule 3).
+  "protected_paths": [
+    "engine/crates/risk/**",
+    "config/limits/**",
+    "ops/deploy/**",
+    "fund/**",
+    ".github/workflows/**",
+    ".claude/hooks/**",
+    ".claude/settings.json",
+    # This policy, the classifier and the outcome/scorecard stores.
+    "autonomy/**",
+    # Decides who the humans behind T3 are.
+    ".github/CODEOWNERS",
+    # Breaker trip tests and this gate's tests; weakening a test weakens
+    # the check it proves.
+    "tests/autonomy/**",
+    # Tests for the protected hooks.
+    "tests/hooks/**",
+    # The T3 reviewer; a softer prompt is a softer T3.
+    ".claude/agents/risk-auditor.md",
+    # Checks the paid and knowledge loops read from main: loosening the AI
+    # gate turns every paid loop on, loosening the scope check widens what a
+    # knowledge PR may touch.
+    "scripts/ci/ai_gate.py",
+    "tests/ci/**",
+    "scripts/knowledge/scope_check.py"
+  ],
+
+  # Never auto-merged, whatever tier a path would otherwise get. Deliberately
+  # overlaps protected_paths so dropping a path from that list does not by
+  # itself enable auto-merge.
+  "never_auto_merge_paths": [
+    "engine/crates/risk/**",
+    "config/limits/**",
+    "ops/deploy/**",
+    "fund/**",
+    ".github/workflows/**",
+    ".claude/settings.json",
+    ".claude/hooks/**",
+    "autonomy/**",
+    "scripts/ci/ai_gate.py",
+    "tests/ci/**",
+    "scripts/knowledge/scope_check.py"
+  ],
+
+  # Ordered; the first matching rule sets a path's tier. Globs: "**" spans
+  # directories, "*" and "?" stay within one path segment.
+  "rules": [
+    # T0 is extension-restricted so a script dropped into a registry or
+    # journal directory falls through to T2.
+    {"pattern": "research/registry/**/*.json", "tier": "T0"},
+    {"pattern": "research/registry/**/*.jsonl", "tier": "T0"},
+    {"pattern": "research/registry/**/*.yaml", "tier": "T0"},
+    {"pattern": "research/registry/**/*.md", "tier": "T0"},
+    {"pattern": "docs/research/graveyard.md", "tier": "T0"},
+    {"pattern": "docs/research/journal/**/*.md", "tier": "T0"},
+    {"pattern": "docs/GLOSSARY.md", "tier": "T0"},
+    {"pattern": ".claude/learnings/inbox/**/*.md", "tier": "T0"},
+    {"pattern": ".claude/learnings/archive/**/*.md", "tier": "T0"},
+    {"pattern": "docs/reports/weekly/*.md", "tier": "T0"},
+
+    # Decisions, plans and on-call procedures are not "doc fixes"; they stay
+    # T2 even though they are markdown.
+    {"pattern": "docs/adr/**", "tier": "T2"},
+    {"pattern": "docs/plans/**", "tier": "T2"},
+    {"pattern": "docs/runbooks/**", "tier": "T2"},
+    {"pattern": "docs/postmortems/**", "tier": "T2"},
+
+    # T1 doc fixes. Tests, flaky quarantine, Dependabot patch bumps and
+    # skill wording need content or author checks (Phases B and E); until
+    # then they fall through to T2.
+    {"pattern": "docs/**/*.md", "tier": "T1"}
+  ],
+
+  # Labels can only raise a PR's tier, never lower it, because anyone with
+  # triage access can set a label.
+  "label_tiers": {
+    "model-promotion": "T3",
+    "strategy-promotion": "T3",
+    "tier:t3": "T3",
+    "tier:t2": "T2"
+  },
+  "agent_review_label_prefix": "agent-approved:",
+
+  # Automatic demotion by one tier (and an issue) when a category's revert
+  # rate over the last window_merges merges exceeds the threshold. Implemented
+  # in Phase D/H; read-only here.
+  "demotion": {
+    # 1 revert in 30 merges (3.3%) already trips it; any lower and one
+    # revert would be the only data point.
+    "revert_rate_threshold": 0.03,
+    "window_merges": 30,
+    # Demotion is always allowed; promotion is a T3 human decision.
+    "promotion_requires": "T3 PR with Phase G metrics"
+  },
+
+  # Global caps across all loops. Small on purpose: the first weeks are for
+  # measuring cost per merged PR, not for throughput.
+  "global": {
+    "daily_usd": 20,
+    "monthly_usd": 300,
+    # One loop at a time until concurrency behavior is observed.
+    "max_concurrent_loops": 1,
+    "open_pr_cap": 5
+  },
+
+  # Per-loop budgets (Phase B). All disabled. Turns map to claude-code-action
+  # claude_args "--max-turns"; dollars to "--max-budget-usd" (verified in
+  # docs/adr/0006-autonomy-scheduling.md). Each loop's daily_usd is well under
+  # the global cap so one runaway loop cannot spend the whole day's budget.
+  "loops": {
+    "loop-knowledge": {"enabled": false, "daily_usd": 3, "max_turns": 20, "timeout_minutes": 20, "open_pr_cap": 1},
+    "loop-health":    {"enabled": false, "daily_usd": 3, "max_turns": 15, "timeout_minutes": 15, "open_pr_cap": 1},
+    "loop-deps":      {"enabled": false, "daily_usd": 2, "max_turns": 15, "timeout_minutes": 30, "open_pr_cap": 1},
+    "loop-research":  {"enabled": false, "daily_usd": 4, "max_turns": 30, "timeout_minutes": 60, "open_pr_cap": 1},
+    "loop-discovery": {"enabled": false, "daily_usd": 4, "max_turns": 30, "timeout_minutes": 60, "open_pr_cap": 1},
+    "loop-models":    {"enabled": false, "daily_usd": 4, "max_turns": 30, "timeout_minutes": 90, "open_pr_cap": 1},
+    "loop-backlog":   {"enabled": false, "daily_usd": 1, "max_turns": 10, "timeout_minutes": 10, "open_pr_cap": 0},
+    "loop-meta":      {"enabled": false, "daily_usd": 5, "max_turns": 30, "timeout_minutes": 60, "open_pr_cap": 1},
+    "loop-report":    {"enabled": false, "daily_usd": 1, "max_turns": 10, "timeout_minutes": 10, "open_pr_cap": 1},
+    # ai-review.yml (both jobs). Zero budget on purpose: scripts/ci/ai_gate.py denies until a
+    # human sets real numbers from measured cost per review.
+    "loop-review":    {"enabled": false, "daily_usd": 0, "max_turns": 0, "timeout_minutes": 30, "open_pr_cap": 0},
+    # ADR-0040 live decider (agent/src/decider/live.ts), QC_AGENT_MODE=live. Disabled with a
+    # zero budget on purpose: no live-LLM decision may run until a human sets real numbers here
+    # from measured cost/latency, and ai_gate.py fails closed on every zero in the meantime.
+    "loop-agent-eval": {"enabled": false, "daily_usd": 0, "max_turns": 0, "timeout_minutes": 0, "open_pr_cap": 0},
+    # ADR-0042 OpenRouter decider (agent/src/decider/openrouter.ts), QC_AGENT_MODE=openrouter.
+    # Separate from loop-agent-eval so turning on the free model never turns on the paid Claude
+    # decider. To enable, a maintainer sets enabled:true and small positive numbers (ai_gate.py denies
+    # zeros), e.g. daily_usd 0.01, max_turns 1, timeout_minutes 1; the decider's real spend cap is
+    # min(daily_usd, QC_OPENROUTER_MAX_USD_PER_DAY), default 0.
+    "loop-agent-openrouter": {"enabled": false, "daily_usd": 0, "max_turns": 1, "timeout_minutes": 1, "open_pr_cap": 0}
+  },
+
+  # Backlog ranking (Phase C): rank = expected_value * confidence / cost,
+  # each scaled by the signal source's weight.
+  "backlog": {
+    "formula": "weight[source] * expected_value * confidence / max(cost, min_cost)",
+    # Floor so a near-zero cost estimate cannot dominate the ranking.
+    "min_cost": 1,
+    # Humans and safety signals outrank self-generated ideas.
+    "weights": {
+      "postmortem": 1.5,
+      "human": 1.3,
+      "ci": 1.2,
+      "models": 1.0,
+      "code": 0.8,
+      "scorecards": 0.8,
+      "research": 0.7
+    },
+    # After two failed attempts an issue is marked needs-human.
+    "max_attempts": 2
+  },
+
+  # Circuit breakers (Phase H). Placeholder values until each has a trip
+  # test; set tight so early trips are false alarms, not missed ones.
+  "breakers": {
+    "revert_rate": {"threshold": 0.03, "window_merges": 30},
+    "cost": {"use_loop_and_global_caps": true},
+    # Automation touching the same file more than 3 times in 7 days blocks
+    # further edits and escalates.
+    "churn": {"max_edits": 3, "window_days": 7},
+    # Safety evals must score 100%.
+    "safety_eval": {"min_score": 1.0},
+    "scope": {"auto_close_out_of_tier": true},
+    "model": {"demote_to": "no-signal", "auto_promote": false},
+    "injection": {"quarantine": true}
+  }
+}

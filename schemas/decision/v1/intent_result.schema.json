@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quant-core.local/schemas/decision/v1/intent_result.schema.json",
+  "title": "IntentResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accepted"
+  ],
+  "properties": {
+    "accepted": {
+      "type": "boolean"
+    },
+    "client_order_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "risk_reject": {
+      "type": "string"
+    },
+    "halted": {
+      "type": "string"
+    },
+    "approval": {
+      "$ref": "approval.schema.json"
+    }
+  }
+}

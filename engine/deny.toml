@@ -1,0 +1,54 @@
+# cargo-deny policy for the engine workspace. Run with `cargo deny check`
+# (CI and `just audit`). Schema: https://embarkstudios.github.io/cargo-deny/
+
+[graph]
+all-features = true
+
+[advisories]
+# Every RustSec vulnerability fails the check. An ignore entry needs a reason
+# and a tracking issue, per SECURITY.md.
+yanked = "deny"
+unmaintained = "all"
+unsound = "all"
+ignore = []
+
+[licenses]
+# Permissive licenses only. Copyleft (GPL, LGPL, AGPL, MPL, EPL, CDDL, ...) is
+# denied by omission until legal review before the fund stage (ADR-0002).
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unlicense",
+    "Zlib",
+    "CC0-1.0",
+]
+confidence-threshold = 0.9
+# The allowlist is policy, not an inventory; unused entries are expected.
+unused-allowed-license = "allow"
+exceptions = []
+
+[licenses.private]
+# Workspace crates are `publish = false` and UNLICENSED.
+ignore = true
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+# Path dependencies inside the workspace have no version; allowed because
+# every crate is publish = false.
+allow-wildcard-paths = true
+highlight = "all"
+deny = []
+skip = []
+skip-tree = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

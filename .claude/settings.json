@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(just *)",
+      "Bash(cargo *)",
+      "Bash(uv *)",
+      "Bash(pytest *)",
+      "Bash(gh pr create *)",
+      "Bash(gh pr view *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git blame *)",
+      "Bash(git branch --show-current)",
+      "Bash(git rev-parse *)",
+      "Bash(git ls-files *)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:docs.rs)",
+      "WebFetch(domain:crates.io)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:docs.python.org)",
+      "WebFetch(domain:github.com)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(**/secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(~/.aws/**)",
+      "Read(~/.ssh/**)",
+      "Edit(.env*)",
+      "Edit(**/secrets/**)",
+      "Edit(**/*.pem)",
+      "Edit(**/*.key)",
+      "Edit(~/.aws/**)",
+      "Edit(~/.ssh/**)",
+      "Edit(/ops/deploy/**)",
+      "Edit(/autonomy/**)",
+      "Edit(/tests/autonomy/**)",
+      "Edit(/tests/hooks/**)",
+      "Edit(/.github/CODEOWNERS)",
+      "Edit(/.claude/settings.local.json)",
+      "Edit(/.claude/agents/risk-auditor.md)",
+      "Edit(/scripts/ci/ai_gate.py)",
+      "Edit(/tests/ci/**)",
+      "Edit(/scripts/knowledge/scope_check.py)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * main)",
+      "Bash(git push * main:*)",
+      "Bash(git push *:main)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(rm -rf /*)",
+      "Bash(rm -rf ~*)",
+      "Bash(rm -rf ..*)",
+      "Bash(rm -rf $HOME*)",
+      "Bash(rm -fr /*)",
+      "Bash(rm -fr ~*)",
+      "Bash(rm -fr ..*)",
+      "Bash(rm -fr $HOME*)",
+      "Bash(*--api-key*)",
+      "Bash(*withdraw*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/session-start.sh"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Edit|Write|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-secrets.sh"],
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/guard-protected.sh"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/post-edit.sh"],
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/capture-learnings.py"],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  }
+}

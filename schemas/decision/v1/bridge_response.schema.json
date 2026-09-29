@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quant-core.local/schemas/decision/v1/bridge_response.schema.json",
+  "title": "BridgeResponse",
+  "type": "object",
+  "required": [
+    "v",
+    "id",
+    "ok"
+  ],
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "decision_request": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "decision_request.schema.json"
+        }
+      ]
+    },
+    "result": {
+      "$ref": "intent_result.schema.json"
+    },
+    "status": {
+      "type": "object"
+    },
+    "hello": {
+      "$ref": "hello.schema.json"
+    },
+    "reconcile": {
+      "type": "object",
+      "description": "protocol v1.2 reconcile op's result: {\"ok\":bool,\"discrepancies\":[string,...]}."
+    },
+    "pending_cancels": {
+      "type": "array",
+      "description": "protocol v1.2.1 (issue #44's cancel-on-halt gap): a fresh, unexpired cancel approval for every order currently PendingCancel, whether it got there via a halt or an explicit cancel_order_intent. Present on drain_halt_cancels' response; the same array also appears nested inside status' own object.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "client_order_id",
+          "approval"
+        ],
+        "properties": {
+          "client_order_id": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "approval": {
+            "$ref": "approval.schema.json"
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

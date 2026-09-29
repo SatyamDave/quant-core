@@ -1,0 +1,90 @@
+# Required check: classifies every PR against autonomy/POLICY.yaml and fails
+# unless the approvals its tier needs exist on the head commit.
+#
+# Phase A only reports and gates. It never enables auto-merge: Phase B adds
+# that step once the autonomy GitHub App token exists, because merges made
+# with GITHUB_TOKEN do not trigger downstream workflows.
+#
+# pull_request (never pull_request_target): the job runs with a read-only
+# token and no secrets, so PR content cannot act with write access.
+name: autonomy-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+  # Approvals change the result without a new commit.
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+permissions: read-all
+
+concurrency:
+  group: autonomy-gate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      # The classifier and policy come from the base branch so a PR cannot
+      # loosen the rules it is judged by. This workflow file still runs from
+      # the PR: a PR that edits it, or adds a job named `gate`, passes the gate.
+      # CODEOWNERS cannot require two approvals and rulesets return 403 on this
+      # plan, so nothing else enforces T3 on such a PR today. The real fix is an
+      # org-level required workflow or required reviewers on .github/workflows/
+      # (docs/plans/0002-autonomy.md, limit 5).
+      - name: Check out the base branch policy
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          sparse-checkout: autonomy
+
+      # Only while main has no classifier yet (the PR that introduces it).
+      # That PR touches autonomy/, so it is classified T3 regardless.
+      - name: Use the PR's policy while main has none
+        if: hashFiles('autonomy/classify.py') == ''
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          sparse-checkout: autonomy
+
+      - name: Fetch PR, changed files and reviews
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          gh api "repos/$REPO/pulls/$PR" > "$RUNNER_TEMP/pr.json"
+          gh api --paginate "repos/$REPO/pulls/$PR/files?per_page=100" --jq '.[]' > "$RUNNER_TEMP/files.jsonl"
+          gh api --paginate "repos/$REPO/pulls/$PR/reviews?per_page=100" --jq '.[]' > "$RUNNER_TEMP/reviews.jsonl"
+
+      # author_association says COLLABORATOR even for read access, so look up
+      # each approver's permission. A failed lookup records none: that
+      # approval does not count.
+      - name: Fetch approvers' repository permission
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          : > "$RUNNER_TEMP/permissions.jsonl"
+          jq -r 'select(.state == "APPROVED") | .user.login' "$RUNNER_TEMP/reviews.jsonl" | sort -u |
+          while read -r login; do
+            [[ "$login" =~ ^[A-Za-z0-9-]+$ ]] || continue
+            permission=$(gh api "repos/$REPO/collaborators/$login/permission" --jq .permission 2>/dev/null || echo none)
+            jq -cn --arg login "$login" --arg permission "$permission" '{$login, $permission}' >> "$RUNNER_TEMP/permissions.jsonl"
+          done
+
+      - name: Classify and gate
+        run: >
+          python3 autonomy/classify.py --policy autonomy/POLICY.yaml gate
+          --pr "$RUNNER_TEMP/pr.json"
+          --files "$RUNNER_TEMP/files.jsonl"
+          --reviews "$RUNNER_TEMP/reviews.jsonl"
+          --permissions "$RUNNER_TEMP/permissions.jsonl"

@@ -1,0 +1,12 @@
+{"type": "user", "message": {"role": "user", "content": "<system-reminder>injected context, not a human; no, wrong</system-reminder>"}, "isMeta": true}
+{"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": "Add a mid-price helper to the order book."}]}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "t1", "name": "Edit", "input": {"file_path": "{ROOT}/engine/crates/orderbook/src/lib.rs", "old_string": "a", "new_string": "b"}}]}}
+{"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t1", "content": "ok"}]}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "t2", "name": "Bash", "input": {"command": "cargo test"}}]}}
+{"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t2", "is_error": true, "content": "error[E0308]: mismatched types, key AKIAIOSFODNN7EXAMPLE"}]}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "t3", "name": "Bash", "input": {"command": "cargo test"}}]}}
+{"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t3", "is_error": true, "content": "error[E0308]: mismatched types again"}]}}
+{"type": "user", "message": {"role": "user", "content": "No, don't use f64 for prices, use qc_core::Price instead. My token is sk-ant-fake0123456789abcdef and ghp_abcdefghijklmnopqrstuvwxyz0123 and\n-----BEGIN RSA PRIVATE KEY-----\nMIIEfake\n-----END RSA PRIVATE KEY-----"}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "tool_use", "id": "t4", "name": "Edit", "input": {"file_path": "{ROOT}/engine/crates/orderbook/src/lib.rs", "old_string": "b", "new_string": "c"}}]}}
+{"type": "user", "message": {"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t4", "content": "ok"}]}}
+{"type": "assistant", "message": {"role": "assistant", "content": [{"type": "text", "text": "Turns out Price::from_f64 does not exist; the fixed-point type only parses decimal strings."}]}}

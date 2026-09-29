@@ -1,0 +1,90 @@
+{
+  "study": "0002-favorite-longshot-v2",
+  "registered_on": "2026-09-28",
+  "seed": 20260928,
+  "api_base": "https://external-api.kalshi.com/trade-api/v2",
+  "openapi_version": "3.31.0",
+  "openapi_sha256": "1e0a942c4fb39ea48dac12c8fde51fd9a9ce81f4f43a91637529be2c5624ed02",
+  "request_budget_total": 2000,
+  "request_budget_listing_max": 200,
+  "sizing": {
+    "method": "GET /events?series_ticker=<X>&status=settled&min_close_ts=1785369600&limit=200, one page per candidate series (EventData carries no result or price field per the OpenAPI schema, so this counts settled events without reading any outcome). Counted before any /markets or /markets/trades call was made against the candidate series.",
+    "candidates_checked_settled_events_since_cutoff": {
+      "KXHIGHNY": 61,
+      "KXHIGHLAX": 61,
+      "KXHIGHCHI": 61,
+      "KXAAAGASD": 61,
+      "KXUSDJPY": 42,
+      "KXEURUSD": 42
+    },
+    "markets_per_event_checked_via_nested_probe": {
+      "KXHIGHNY": 6,
+      "KXUSDJPY": 15,
+      "KXAAAGASD": 17
+    },
+    "markets_per_event_assumed_by_product_similarity_UNVERIFIED": {
+      "KXHIGHLAX": 6,
+      "KXHIGHCHI": 6
+    },
+    "chosen": ["KXHIGHNY", "KXHIGHLAX", "KXHIGHCHI", "KXUSDJPY"],
+    "estimated_population_markets": 1497,
+    "chosen_reason": "Four series discovered from GET /series?include_volume=true (the primary category/frequency/volume_fp metadata, no per-market data): three same-product daily temperature ladders (fee_type quadratic, fee_multiplier 1) and one daily FX range ladder (also quadratic, multiplier 1), all with a full settled-event history back to the historical/live cutoff and none returning zero events (unlike study 0001). Candidates not chosen: KXAAAGASD (gas price) uses a non-mutually-exclusive cumulative-threshold ladder, a different mechanism than the mutually-exclusive brackets of the chosen four, so it is left out to keep the population mechanism homogeneous; KXEURUSD was dropped only to keep the estimated population comfortably inside the request budget, not for any outcome-based reason."
+  },
+  "listing": {
+    "endpoint": "/markets",
+    "params": {"status": "settled", "mve_filter": "exclude", "limit": 1000},
+    "series_tickers": ["KXHIGHNY", "KXHIGHLAX", "KXHIGHCHI", "KXUSDJPY"],
+    "window_settled_utc": ["2026-07-30T00:00:00Z", "2026-09-21T00:00:00Z"],
+    "slice": "one series_ticker at a time, min_settled_ts/max_settled_ts spanning the whole window (no daily slicing: per-series volume is small enough not to need it)",
+    "max_pages_per_series": 50
+  },
+  "population": {
+    "market_type": "binary",
+    "results_kept": ["yes", "no"],
+    "exclude_if_mve_collection_ticker": true,
+    "volume_fp_gt": 0,
+    "require_expected_expiration_time": true,
+    "require_open_before_decision": true,
+    "require_close_after_decision": true,
+    "max_markets_per_event": 20
+  },
+  "decision": {
+    "anchor": "expected_expiration_time",
+    "offset_hours": 24
+  },
+  "price": {
+    "source": "trades",
+    "field": "yes_price_dollars",
+    "window_hours_before_decision": 24,
+    "min_window_volume_contracts": 10,
+    "clip": [0.01, 0.99]
+  },
+  "split": {
+    "time_quantile_of_decision_ts": 0.6,
+    "train": "event whose every market has settlement_ts < S",
+    "test": "event whose every market has decision_ts >= S",
+    "other": "purged"
+  },
+  "primary": {
+    "low_bin_max_price": 0.15,
+    "high_bin_min_price": 0.85,
+    "metric": "mean over pooled-bin markets of s*(y - p), s=-1 low bin, s=+1 high bin",
+    "bootstrap": {"unit": "event_ticker", "resamples": 2000, "ci": 0.95, "method": "percentile"}
+  },
+  "secondary": {
+    "candidate": "p' = sigmoid(a * logit(p)), a fit on train by minimizing mean Brier, golden section on [0.25, 4.0], 100 iterations",
+    "ablation": "raw price p",
+    "metric": "held-out mean Brier, raw minus candidate, event-clustered bootstrap CI"
+  },
+  "economics": {
+    "fee_model_UNVERIFIED": "fee_multiplier * 0.07 * p * (1 - p) per contract for quadratic* fee types, 0 while fee_waiver_expiration_time > decision_ts",
+    "execution_allowance_dollars": 0.01,
+    "min_useful_effect": "mean over pooled-bin markets of (fee_model(p) + execution_allowance)"
+  },
+  "decision_rule": {
+    "min_events_in_pooled_bins": 100,
+    "PROMOTE": "events >= 100 AND CI lower > MUE AND fee schedule verified from an official Kalshi document AND held-out Brier(candidate) < Brier(raw) AND all validation and leakage checks pass",
+    "REJECT": "events >= 100 AND CI upper < MUE",
+    "INSUFFICIENT_EVIDENCE": "anything else"
+  }
+}

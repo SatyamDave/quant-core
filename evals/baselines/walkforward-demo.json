@@ -1,0 +1,14 @@
+{
+  "_comment": "Committed baseline for the Tier 1 walk-forward regression case (scripts/eval/run.py). This is a regression check, not a performance claim: it says `just walkforward demo` still reproduces the same numbers on the same seeded synthetic data, not that the demo model has edge. FAIL is the expected, correct verdict here because GATE_DSR=1.0 in ml/validation/walkforward.py is designed to be unreachable (see CLAUDE.md rule 6/7) until a human sets a real deflated-Sharpe threshold. Recorded from `just walkforward demo` (scratch mode) on 2026-09-28, matching the committed demo record in research/registry/log/models.jsonl.",
+  "experiment": "demo",
+  "config": "backtest/configs/demo.yaml",
+  "verdict": "FAIL",
+  "metrics": {
+    "deflated_sharpe": 0.0,
+    "pbo": 0.34285714285714286
+  },
+  "tolerance": {
+    "deflated_sharpe": 0.05,
+    "pbo": 0.03
+  }
+}

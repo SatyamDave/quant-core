@@ -1,0 +1,36 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "benches"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "UNLICENSED"
+publish = false
+
+[workspace.dependencies]
+qc-core = { path = "crates/core" }
+qc-orderbook = { path = "crates/orderbook" }
+qc-strategy-runtime = { path = "crates/strategy-runtime" }
+qc-gateway = { path = "crates/gateway" }
+qc-oms = { path = "crates/oms" }
+qc-risk = { path = "crates/risk" }
+qc-replay = { path = "crates/replay" }
+qc-inference = { path = "crates/inference" }
+proptest = "1.11"
+sha2 = "0.10"
+criterion = "0.8"
+serde = { version = "1", features = ["derive"] }
+toml = "1"
+
+[workspace.lints.rust]
+unsafe_code = "deny"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+[profile.release]
+debug = true
+# `just replay` runs this profile; an i64 money sum that wraps must panic, not continue.
+overflow-checks = true

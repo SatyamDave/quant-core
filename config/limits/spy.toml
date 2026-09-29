@@ -1,0 +1,21 @@
+# Per-instrument risk limits for config/instruments/spy.toml (issue #66).
+# Protected zone: human approval required. Limits may be tightened
+# automatically; loosening needs two human approvals (root CLAUDE.md rules 3-4).
+# Same shape as default.toml, in US-equity units now: max_position is whole
+# shares, everything money-shaped is USD. Placeholder values pending #23
+# (the operator's actual agreed numbers), kept deliberately tiny like every
+# other default in this repo.
+
+max_position = "10"          # shares per instrument
+max_notional = "25"          # USD per order; within config/environments/canary.toml's caps (default.toml)
+max_order_rate_per_sec = 5
+max_daily_loss = "5"         # USD; trading halts at this loss
+price_band_bps = 50          # reject orders more than 0.5% from the reference price
+stale_data_ms = 1000         # halt order entry when market data is older than this
+
+# Agentic dollar cap (#41): pending #23, kept a small multiple of max_notional
+# like config/limits/default.toml.
+max_daily_notional = "50"    # USD per exchange day; within the canary caps (default.toml)
+
+# Wash-trade detection window (#40): unchanged from default.toml.
+wash_trade_window_ms = 2000

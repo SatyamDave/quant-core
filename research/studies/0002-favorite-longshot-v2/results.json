@@ -1,0 +1,107 @@
+{
+  "economics": {
+    "ev_after_fee_and_allowance": -0.009235719562243502,
+    "ev_after_fee_ci": [
+      -0.012423341397849461,
+      0.011951564174894217
+    ],
+    "ev_after_fee_per_contract": 0.0007642804377564987,
+    "mean_fee_per_contract_UNVERIFIED": 0.0017664993160054724,
+    "note": "upper bound: last trade is not a fill; spread, depth, queue unknown"
+  },
+  "fees_verified": false,
+  "hypothesis_status": "UNDETERMINED",
+  "primary": {
+    "G": 0.002530779753761971,
+    "bins": {
+      "high": {
+        "ci": [
+          -0.08347826086956521,
+          0.05217391304347827
+        ],
+        "events": 46,
+        "markets": 46,
+        "mean_price": 0.9434782608695652,
+        "yes_rate": 0.9347826086956522,
+        "yes_rate_minus_price": -0.008695652173913031
+      },
+      "low": {
+        "ci": [
+          -0.01276410998552822,
+          0.008026315789473683
+        ],
+        "events": 165,
+        "markets": 685,
+        "mean_price": 0.025182481751824817,
+        "yes_rate": 0.021897810218978103,
+        "yes_rate_minus_price": -0.003284671532846716
+      }
+    },
+    "ci": [
+      -0.010631001371742112,
+      0.013712737127371276
+    ],
+    "mue_UNVERIFIED_fees": 0.011766499316005473,
+    "pooled_events": 165,
+    "pooled_markets": 731
+  },
+  "sample": {
+    "analysed_events": 165,
+    "analysed_markets": 976,
+    "eligible_events": 165,
+    "eligible_markets": 1039,
+    "exclusions": {
+      "closed_before_decision_by_result": {},
+      "excluded": {
+        "opened_after_decision": 389,
+        "zero_volume": 66
+      }
+    },
+    "feature_reasons": {
+      "no_trade_in_window": 48,
+      "ok": 976,
+      "window_volume_below_min": 15
+    },
+    "listing": {
+      "duplicate_tickers": 0,
+      "listing_requests_through": 9,
+      "series_complete": [
+        "KXHIGHNY",
+        "KXHIGHLAX",
+        "KXHIGHCHI",
+        "KXUSDJPY"
+      ],
+      "series_dropped_page_cap": [],
+      "stop_reason": null
+    },
+    "median_price_age_s": 232,
+    "sampled_markets": 1039,
+    "sampling_stopped": "sample exhausted",
+    "validation": {
+      "duplicate_listing_tickers": 0,
+      "duplicate_trade_ids": 0,
+      "trade_pages_not_newest_first": 0,
+      "trade_pages_truncated_at_limit": 359,
+      "trades_outside_open_close": 0,
+      "trades_wrong_ticker": 0
+    }
+  },
+  "secondary": {
+    "a": 0.9933813324531713,
+    "brier_candidate": 0.05170882839564269,
+    "brier_raw": 0.05168245614035088,
+    "purged_events": 0,
+    "raw_minus_candidate": -2.6372255291812044e-05,
+    "raw_minus_candidate_ci": [
+      -8.294032450857191e-05,
+      3.748050342181025e-05
+    ],
+    "split_S": 1788030000,
+    "test_events": 68,
+    "test_markets": 399,
+    "train_events": 97,
+    "train_markets": 577
+  },
+  "study": "0002-favorite-longshot-v2",
+  "verdict": "INSUFFICIENT EVIDENCE"
+}

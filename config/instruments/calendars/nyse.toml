@@ -1,0 +1,121 @@
+# NYSE market holidays and early-closing days for 2026 and 2027 (issue #66
+# follow-up, wave3/calendar). Referenced from an instrument's
+# `trading_hours.calendar` (see config/instruments/spy.toml).
+#
+# Source: NYSE's official trading-hours calendar,
+# https://www.nyse.com/markets/hours-calendars -- accessed 2026-09-28.
+# 2026 full-closure dates cross-checked against a second independent source
+# (Nasdaq Trader's trading calendar, https://www.nasdaqtrader.com/Trader.aspx?id=Calendar,
+# accessed 2026-09-28), and every date's weekday, plus the "observed"
+# substitutions (Independence Day and Juneteenth move to the preceding Friday
+# when the actual date is a Saturday, and to the following Monday when it is
+# a Sunday; Christmas moves to the preceding Friday when Dec 25 is a
+# Saturday), verified independently against the Gregorian calendar and the
+# Anonymous Gregorian algorithm for Easter/Good Friday.
+#
+# Coverage is exactly the years present below (2026-2027): there is
+# deliberately no entry, and so no coverage, for any other year.
+# `instrument.rs`'s `MarketCalendar` fails a date outside that range closed
+# (rejects "outside_trading_hours") rather than assuming a regular session --
+# see the "date outside coverage" tests in tests/instrument.rs.
+#
+# A date not listed here but inside 2026-2027 is a regular trading day; the
+# weekday/open/close gate in `trading_hours` still applies on top of this file.
+
+[[holidays]]
+date = "2026-01-01"
+name = "New Year's Day"
+
+[[holidays]]
+date = "2026-01-19"
+name = "Martin Luther King, Jr. Day"
+
+[[holidays]]
+date = "2026-02-16"
+name = "Washington's Birthday"
+
+[[holidays]]
+date = "2026-04-03"
+name = "Good Friday"
+
+[[holidays]]
+date = "2026-05-25"
+name = "Memorial Day"
+
+[[holidays]]
+date = "2026-06-19"
+name = "Juneteenth National Independence Day"
+
+[[holidays]]
+date = "2026-07-03"
+name = "Independence Day (observed; July 4 is a Saturday)"
+
+[[holidays]]
+date = "2026-09-07"
+name = "Labor Day"
+
+[[holidays]]
+date = "2026-11-26"
+name = "Thanksgiving Day"
+
+[[holidays]]
+date = "2026-12-25"
+name = "Christmas Day"
+
+[[holidays]]
+date = "2027-01-01"
+name = "New Year's Day"
+
+[[holidays]]
+date = "2027-01-18"
+name = "Martin Luther King, Jr. Day"
+
+[[holidays]]
+date = "2027-02-15"
+name = "Washington's Birthday"
+
+[[holidays]]
+date = "2027-03-26"
+name = "Good Friday"
+
+[[holidays]]
+date = "2027-05-31"
+name = "Memorial Day"
+
+[[holidays]]
+date = "2027-06-18"
+name = "Juneteenth National Independence Day (observed; June 19 is a Saturday)"
+
+[[holidays]]
+date = "2027-07-05"
+name = "Independence Day (observed; July 4 is a Sunday)"
+
+[[holidays]]
+date = "2027-09-06"
+name = "Labor Day"
+
+[[holidays]]
+date = "2027-11-25"
+name = "Thanksgiving Day"
+
+[[holidays]]
+date = "2027-12-24"
+name = "Christmas Day (observed; Dec 25 is a Saturday)"
+
+[[early_closes]]
+date = "2026-11-27"
+close = "13:00"
+name = "Day after Thanksgiving"
+
+[[early_closes]]
+date = "2026-12-24"
+close = "13:00"
+name = "Christmas Eve"
+
+[[early_closes]]
+date = "2027-11-26"
+close = "13:00"
+name = "Day after Thanksgiving"
+
+# No 2027 Christmas Eve early close: Dec 24, 2027 is itself the observed
+# Christmas holiday above (full closure), not a separate early-close day.

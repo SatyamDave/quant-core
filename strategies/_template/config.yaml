@@ -1,0 +1,7 @@
+# Strategy parameters. Risk limits do not live here: they come from config/limits/.
+name: strategy_name
+owner: ""
+gate: idea
+instruments: []
+venue: ""
+parameters: {}

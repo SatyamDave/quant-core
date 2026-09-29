@@ -1,0 +1,60 @@
+{
+  "request": {
+    "request_id": "fixture-clean-no-trade-001",
+    "ts_ns": 1767571201000000000,
+    "instrument": "SIM-ETF",
+    "best_bid": "100.10",
+    "best_ask": "100.14",
+    "mid": "100.12",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.0 },
+    "signal": {
+      "direction": "flat",
+      "probs": [0.31, 0.39, 0.3],
+      "model_sha256": "023b84a2cc32a981a29025ac162e7d18860ae7c017186fb82d7e56584faa1dc0"
+    },
+    "position": "0",
+    "limits": {
+      "max_position": "10",
+      "max_notional": "100000",
+      "max_order_rate_per_sec": 5,
+      "remaining_daily_loss": "1000"
+    },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  "decision": {
+    "request_id": "fixture-clean-no-trade-001",
+    "action": "no_trade",
+    "rationale": "signal direction is flat, no edge to act on"
+  },
+  "result": null,
+  "mode": "live",
+  "prompt_version": "v1",
+  "model": "synthetic-fixture-do-not-treat-as-live",
+  "raw": {
+    "synthetic": true,
+    "note": "Hand-authored fixture for issue #36 (agent decision replay layer). No real Anthropic API call was made to produce this. See agent/fixtures/replay/README.md for what a genuine recording (once live mode is enabled) will look like instead.",
+    "sdk_messages": [
+      { "type": "system", "subtype": "init", "model": "synthetic-fixture-do-not-treat-as-live" },
+      {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "name": "mcp__decision__no_trade",
+              "input": {
+                "request_id": "fixture-clean-no-trade-001",
+                "rationale": "signal direction is flat, no edge to act on"
+              }
+            }
+          ]
+        }
+      },
+      { "type": "result", "subtype": "success", "total_cost_usd": 0.003 }
+    ]
+  },
+  "cost_usd": "0.003",
+  "latency_ms": 1420
+}

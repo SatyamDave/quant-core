@@ -1,0 +1,23 @@
+# Sample instrument config (protocol v1.2, issue #66). Placeholder symbol
+# "SPY" --
+# this file exists so the engine can speak a real US-equity-shaped
+# instrument (ticker, tick size, whole-share lots, regular trading hours),
+# not to declare SPY the chosen asset. Protected zone: human approval
+# required (root CLAUDE.md rule 3); tighten-only (rule 4).
+
+id = 2
+symbol = "SPY"
+tick_size = "0.01"      # US equities trade in cent increments
+qty_step = "1"          # whole shares only
+min_qty = "1"
+allows_fractional = false
+# Resolved relative to this file's own directory (see `main.rs::load_instrument`).
+limits = "../limits/spy.toml"
+
+[trading_hours]
+tz = "America/New_York"
+open = "09:30"
+close = "16:00"
+days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
+# Resolved relative to this file's own directory, same convention as `limits` above.
+calendar = "calendars/nyse.toml"

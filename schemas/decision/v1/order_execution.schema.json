@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quant-core.local/schemas/decision/v1/order_execution.schema.json",
+  "title": "OrderExecution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "client_order_id",
+    "event",
+    "ts_ns"
+  ],
+  "properties": {
+    "client_order_id": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "event": {
+      "enum": [
+        "accepted",
+        "rejected",
+        "partially_filled",
+        "filled",
+        "canceled",
+        "cancel_rejected"
+      ]
+    },
+    "qty": {
+      "type": "string",
+      "description": "A fill magnitude, never signed.",
+      "pattern": "^[0-9]+(\\.[0-9]{1,8})?$"
+    },
+    "price": {
+      "type": "string",
+      "description": "A fill magnitude, never signed.",
+      "pattern": "^[0-9]+(\\.[0-9]{1,8})?$"
+    },
+    "venue_order_id": {
+      "type": "string"
+    },
+    "ts_ns": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 500
+    }
+  }
+}

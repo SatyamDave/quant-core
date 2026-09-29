@@ -1,0 +1,19 @@
+# Placeholder promotion-bar thresholds for scripts/eval/promote.py (issue #53), pending the maintainers'
+# decision — the same not-yet-agreed-number problem issue #22 names for the classifier's
+# deflated-Sharpe gate ("Agree how good a strategy must be to go live"), mirrored here for
+# prompt/tool-config challengers. This file's job is to make the gate real, config-driven and
+# testable today (issue #22's own lesson: "the gate reads that number from a config file, not a
+# number buried in code") — it is not itself the maintainers' sign-off on what "better" means.
+# Tightening these numbers needs no approval; loosening does (root CLAUDE.md rule 4 logic),
+# though nothing here is in config/limits/** (no funded account exists to apply a risk limit to).
+
+[promotion]
+# Family-wise significance level for the Holm-corrected bootstrap tests (net P&L improvement,
+# plus the two guardrails: invalid decisions and risk rejects must not get significantly worse).
+alpha = 0.05
+# Smallest net P&L improvement (decimal string, USD) worth promoting at all, before any
+# significance test runs. A positive point estimate below this is treated as noise.
+min_improvement_usd = "0.01"
+# Bootstrap resamples per metric. Deterministic given --seed (random.Random(seed)).
+n_bootstrap = 10000
+seed = 0

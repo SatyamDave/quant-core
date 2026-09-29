@@ -1,0 +1,41 @@
+[Unit]
+Description=quant-core live trading supervisor (agent service; spawns its own qc-bridge child)
+# Not applied anywhere; see ops/live/README.md for install steps. Requires network only to the
+# extent qc-bridge/agent need it (venue, model API) -- the supervisor itself needs none.
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=quant-live
+Group=quant-live
+WorkingDirectory=/opt/quant-core
+# Populates ANTHROPIC_API_KEY per QC_SECRETS_PROVIDER (default: env,
+# meaning EnvironmentFile= below already has them), plus QC_BRIDGE_BIN / QC_BRIDGE_ARGS, which
+# the agent service itself reads to spawn its qc-bridge child (agent/src/cli.ts) -- the
+# supervisor just needs to inherit them, not pass them through as its own flags.
+# See ops/live/bin/load-secrets.sh and ops/live/live.env.example.
+EnvironmentFile=-/etc/quant-core/live.env
+ExecStartPre=/opt/quant-core/ops/live/bin/load-secrets.sh
+ExecStart=/usr/bin/env python3 /opt/quant-core/ops/live/supervisor.py \
+    --agent-cmd "${QC_AGENT_CMD}" \
+    --require-env ANTHROPIC_API_KEY \
+    --require-env QC_BRIDGE_BIN \
+    --halt-marker /var/lib/qc-live/state/HALT \
+    --log-dir /var/log/qc-live
+
+# The supervisor already restarts the agent (and, transitively, its qc-bridge child) internally
+# with its own backoff and crash-loop halt; this is the outer layer in case the supervisor
+# process itself dies.
+Restart=on-failure
+RestartSec=5
+
+# The supervisor's own halt marker is the authority on whether trading may resume; this unit
+# does not clear it, and a restart after a halt will refuse to start again (fail closed).
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/log/qc-live /var/lib/qc-live
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

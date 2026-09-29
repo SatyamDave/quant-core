@@ -1,0 +1,17 @@
+# Fixture-only limits for tests that replay tests/replay/sample_day.csv (~$92k of
+# accepted-order notional across the simulated day, by design — it stresses the engine and
+# risk gate, not a real account's spending pattern). NOT the production default: that lives
+# in config/limits/default.toml and is deliberately tiny. Every value here matches
+# config/limits/default.toml except max_daily_notional, which needs headroom for this one
+# fixture's exercised volume. Used by: engine/crates/replay/tests/replay.rs,
+# engine/crates/bridge/tests/{support,model_signal,determinism}.rs, `just replay`, `just
+# agent-sim`.
+
+max_position = "0.01"
+max_notional = "500"
+max_order_rate_per_sec = 5
+max_daily_loss = "100"
+price_band_bps = 50
+stale_data_ms = 1000
+max_daily_notional = "150000"
+wash_trade_window_ms = 2000

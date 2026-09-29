@@ -1,0 +1,35 @@
+# Walk-forward of the baseline logistic model on the synthetic sample day.
+# `just walkforward demo`. A config without costs.fees, latency, or fill_model is refused.
+name: demo
+data:
+  source: synthetic  # data/recorders/synthetic.py; real recorded days come from data/catalog
+  seed: 7
+  events: 60000
+  date: "2026-01-05"
+label:
+  horizon_events: 50  # ternary up/flat/down, net of the half-spread at entry
+features: tob-v1
+model:
+  family: logistic_regression
+  seed: 7
+  grid_C: [0.01, 0.1, 1.0, 10.0]  # each value is one registry trial
+validation:
+  n_splits: 5
+  embargo_events: 50
+  min_train_events: 20000
+  pbo_blocks: 8
+costs:
+  fees:
+    maker_bps: 1.0
+    taker_bps: 5.0
+  funding:
+    rate_bps_per_8h: 1.0
+    applied: false  # holds last seconds; perps funding matters for multi-hour holds
+  slippage_bps: 0.0  # beyond the touch; not modeled yet
+latency:
+  model: constant  # backtest/latency_models
+  order_entry_ns: 1500000
+  market_data_ns: 500000
+  simulated: false
+fill_model:
+  model: taker_at_touch  # market-making configs must use a queue-position model (backtest/fill_models)

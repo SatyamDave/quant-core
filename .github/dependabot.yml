@@ -1,0 +1,53 @@
+# Weekly grouped dependency updates. Security updates are raised as soon as
+# an advisory lands regardless of this schedule (enable Dependabot security
+# updates in repo settings; see docs/runbooks/github-hardening.md).
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /engine
+    schedule:
+      interval: weekly
+    groups:
+      cargo:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /research
+    schedule:
+      interval: weekly
+    groups:
+      python:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # .devcontainer/ arrives with the contributor-experience phase.
+  - package-ecosystem: docker
+    directory: /.devcontainer
+    schedule:
+      interval: weekly
+    groups:
+      docker:
+        patterns: ["*"]
+
+  - package-ecosystem: pre-commit
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      pre-commit:
+        patterns: ["*"]
+
+  - package-ecosystem: terraform
+    directory: /ops/infra
+    schedule:
+      interval: weekly
+    groups:
+      terraform:
+        patterns: ["*"]

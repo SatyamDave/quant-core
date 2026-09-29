@@ -1,0 +1,67 @@
+{
+  "request": {
+    "request_id": "fixture-clean-buy-001",
+    "ts_ns": 1767571200000000000,
+    "instrument": "SIM-ETF",
+    "best_bid": "100.00",
+    "best_ask": "100.05",
+    "mid": "100.025",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.3 },
+    "signal": {
+      "direction": "up",
+      "probs": [0.08, 0.1, 0.82],
+      "model_sha256": "1720e77d6d7f8afca1b701faeff206fa8622ed473b06a17d6194937ff4ce825e"
+    },
+    "position": "0",
+    "limits": {
+      "max_position": "10",
+      "max_notional": "100000",
+      "max_order_rate_per_sec": 5,
+      "remaining_daily_loss": "1000"
+    },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  "decision": {
+    "request_id": "fixture-clean-buy-001",
+    "action": "buy",
+    "qty": "1",
+    "limit_price": "100.05",
+    "confidence": 0.82,
+    "rationale": "signal up at max prob 0.8200, within max_position and max_notional"
+  },
+  "result": { "accepted": true, "client_order_id": 1 },
+  "mode": "live",
+  "prompt_version": "v1",
+  "model": "synthetic-fixture-do-not-treat-as-live",
+  "raw": {
+    "synthetic": true,
+    "note": "Hand-authored fixture for issue #36 (agent decision replay layer). No real Anthropic API call was made to produce this. See agent/fixtures/replay/README.md for what a genuine recording (once live mode is enabled) will look like instead.",
+    "sdk_messages": [
+      { "type": "system", "subtype": "init", "model": "synthetic-fixture-do-not-treat-as-live" },
+      {
+        "type": "assistant",
+        "message": {
+          "role": "assistant",
+          "content": [
+            {
+              "type": "tool_use",
+              "name": "mcp__decision__submit_order_intent",
+              "input": {
+                "request_id": "fixture-clean-buy-001",
+                "action": "buy",
+                "qty": "1",
+                "limit_price": "100.05",
+                "confidence": 0.82,
+                "rationale": "signal up at max prob 0.8200, within max_position and max_notional"
+              }
+            }
+          ]
+        }
+      },
+      { "type": "result", "subtype": "success", "total_cost_usd": 0.004 }
+    ]
+  },
+  "cost_usd": "0.004",
+  "latency_ms": 1850
+}

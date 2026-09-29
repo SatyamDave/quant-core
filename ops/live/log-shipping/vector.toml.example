@@ -1,0 +1,31 @@
+# Off-host log shipping template for the live host (#63), using Vector (https://vector.dev).
+# Documented, pluggable: any shipper that tails a directory of JSON-lines files and forwards it
+# satisfies the requirement (Fluent Bit, a syslog forward, etc.) -- this is a starting point, not
+# a mandate to use Vector specifically. No real destination is configured; ${QC_LOG_SINK_*} must
+# be filled in (and the [sinks.off_host] block picked to match the destination's actual type)
+# before this does anything.
+
+[sources.qc_live_logs]
+type = "file"
+include = ["/var/log/qc-live/*.log"]
+read_from = "beginning"
+
+[transforms.parse_json]
+type = "remap"
+inputs = ["qc_live_logs"]
+source = '''
+. = parse_json!(.message)
+'''
+
+# Example destination: an S3-compatible bucket in a separate account, matching
+# ops/deploy/README.md's "shipped off-host ... with object lock" audit-log requirement. Swap for
+# whatever off-host destination the team actually uses (a log service, another sink type, etc.);
+# nothing here is a real, reachable endpoint.
+[sinks.off_host]
+type = "aws_s3"
+inputs = ["parse_json"]
+bucket = "${QC_LOG_SINK_BUCKET}"
+region = "${QC_LOG_SINK_REGION}"
+key_prefix = "qc-live/%Y-%m-%d/"
+compression = "gzip"
+encoding.codec = "json"

@@ -1,0 +1,27 @@
+[Unit]
+Description=quant-core daily close (issue #45 scheduling + #70): reconcile check, broker-sourced P&L, stop-rule alert
+# Not applied anywhere; see ops/live/README.md for install steps. Triggered by
+# qc-daily-close.timer, not started directly by qc-live.service.
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=quant-live
+Group=quant-live
+WorkingDirectory=/opt/quant-core
+EnvironmentFile=-/etc/quant-core/live.env
+# --reconcile-cmd is deliberately omitted here: no live host or venue adapter exists yet
+# (ops/live/README.md's status note), so there is nothing real to point it at. Without it, this
+# close still runs, still writes the day's broker-sourced P&L, and honestly reports
+# reconciliation "unknown" rather than guessing "ok" (root CLAUDE.md rule 10). The day a real
+# reconcile-triggering command exists, add it via a systemd drop-in
+# (/etc/systemd/system/qc-daily-close.service.d/override.conf overriding ExecStart) rather than
+# editing this committed unit file.
+ExecStart=/usr/bin/env python3 /opt/quant-core/scripts/ops/daily_close.py \
+    --bridge-log /var/log/qc-live/agent.log \
+    --state-file /var/lib/qc-live/state/alerts-seen.json
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/log/qc-live /var/lib/qc-live /opt/quant-core/fund/track-record/daily
+PrivateTmp=true

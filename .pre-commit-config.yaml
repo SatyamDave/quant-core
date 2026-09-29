@@ -1,0 +1,53 @@
+# Local gate before every commit. Install once with `just precommit`
+# (pre-commit install), run everything with `pre-commit run --all-files`.
+# CI runs the same checks, so skipping a hook locally only delays the failure.
+default_install_hook_types: [pre-commit]
+fail_fast: false
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: detect-private-key
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+
+  # Same version as research/uv.lock, and the research config applies to ml/ too.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.9
+    hooks:
+      - id: ruff-check
+        args: [--config, research/pyproject.toml]
+      - id: ruff-format
+        args: [--config, research/pyproject.toml]
+
+  # Rust and mypy run from the project environments so versions and config
+  # match `just lint` and CI exactly.
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt --check
+        language: system
+        entry: bash -c 'cd engine && cargo fmt --all --check'
+        files: ^engine/.*\.rs$
+        pass_filenames: false
+      - id: cargo-clippy
+        name: cargo clippy -D warnings
+        language: system
+        entry: bash -c 'cd engine && cargo clippy --workspace --all-targets --locked -- -D warnings'
+        files: ^engine/(.*\.rs|.*Cargo\.(toml|lock)|clippy\.toml)$
+        pass_filenames: false
+      - id: mypy-strict
+        name: mypy --strict (ml/, research/registry)
+        language: system
+        entry: bash -c 'cd research && uv run --locked mypy --strict registry ../ml'
+        files: ^(ml/|research/registry/).*\.py$
+        pass_filenames: false

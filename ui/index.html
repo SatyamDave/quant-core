@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>quant-core console</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">qc</span>
+      <div>
+        <h1>quant-core</h1>
+        <p class="sub">Your agent's trading console</p>
+      </div>
+    </div>
+    <div class="top-right">
+      <span id="mode" class="badge badge-unknown" aria-live="polite">OFFLINE</span>
+      <button id="kill" class="kill" type="button" aria-describedby="kill-help">Kill switch</button>
+      <span id="kill-help" class="sr-only">Halts all order entry. Releasing it needs a human to delete the kill file and restart the bridge.</span>
+    </div>
+  </header>
+
+  <div id="banner" class="banner" role="status" hidden></div>
+
+  <main id="main" class="grid">
+    <section class="card span-3" aria-labelledby="usage-h">
+      <div class="card-head">
+        <h2 id="usage-h">Today vs limits</h2>
+        <span id="today-date" class="muted"></span>
+      </div>
+      <div class="meters" id="meters"></div>
+      <dl class="facts">
+        <div><dt>Position</dt><dd id="position">-</dd></div>
+        <div><dt>Decisions</dt><dd id="decisions-count">-</dd></div>
+        <div><dt>Orders accepted</dt><dd id="orders-count">-</dd></div>
+        <div><dt>Halted</dt><dd id="halted">-</dd></div>
+      </dl>
+    </section>
+
+    <section class="card span-2" aria-labelledby="feed-h">
+      <div class="card-head">
+        <h2 id="feed-h">Decision feed</h2>
+        <label class="inline"><input type="checkbox" id="orders-only"> Orders only</label>
+      </div>
+      <ol id="feed" class="feed" aria-live="polite" aria-relevant="additions"></ol>
+    </section>
+
+    <section class="card" aria-labelledby="order-h">
+      <h2 id="order-h">Manual order intent</h2>
+      <p class="muted small">Goes through the engine's risk checks like any agent intent. Sim/paper unless the operator started the bridge in external mode.</p>
+      <form id="order-form" class="form">
+        <label>Instrument<input name="instrument" required value="SPY" autocomplete="off"></label>
+        <fieldset class="seg">
+          <legend>Side</legend>
+          <label><input type="radio" name="side" value="buy" checked> Buy</label>
+          <label><input type="radio" name="side" value="sell"> Sell</label>
+        </fieldset>
+        <div class="row">
+          <label>Quantity<input name="qty" required inputmode="decimal" pattern="\d+(\.\d+)?" placeholder="1"></label>
+          <label>Limit price<input name="limit_price" required inputmode="decimal" pattern="\d+(\.\d+)?" placeholder="500.00"></label>
+        </div>
+        <label>Time in force
+          <select name="time_in_force"><option value="ioc">IOC</option><option value="gtc">GTC</option></select>
+        </label>
+        <label>Reason<input name="reason" required value="manual intent from console"></label>
+        <button type="submit" class="primary">Submit intent</button>
+        <p id="order-result" class="result" role="status"></p>
+      </form>
+    </section>
+
+    <section class="card span-3" aria-labelledby="rules-h">
+      <div class="card-head">
+        <h2 id="rules-h">Rules</h2>
+        <span class="muted small">Tighten-only. Loosening needs a human edit to <code>config/limits</code> with two approvals.</span>
+      </div>
+      <div id="rules" class="rules"></div>
+    </section>
+  </main>
+
+  <dialog id="kill-dialog" aria-labelledby="kill-title">
+    <form method="dialog" class="dialog">
+      <h2 id="kill-title">Engage the kill switch?</h2>
+      <p>All order entry halts within one second. This is one-way from here: to release it, a human deletes the kill file and restarts the bridge.</p>
+      <label>Reason<input id="kill-reason" value="operator kill from console"></label>
+      <div class="actions">
+        <button value="cancel" type="submit">Cancel</button>
+        <button value="confirm" type="submit" class="danger">Engage kill switch</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

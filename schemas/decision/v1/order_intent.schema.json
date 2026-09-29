@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quant-core.local/schemas/decision/v1/order_intent.schema.json",
+  "title": "OrderIntent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "instrument",
+    "side",
+    "qty",
+    "limit_price",
+    "time_in_force",
+    "reason"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string"
+    },
+    "instrument": {
+      "type": "string"
+    },
+    "side": {
+      "enum": [
+        "buy",
+        "sell"
+      ]
+    },
+    "qty": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]{1,8})?$"
+    },
+    "limit_price": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]{1,8})?$"
+    },
+    "time_in_force": {
+      "enum": [
+        "ioc",
+        "gtc"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 500
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# Live market data, simulated fills, no real orders.
+# No secrets here: credentials are injected at runtime from the secret manager.
+
+name = "paper"
+real_orders = false
+limits = "config/limits/default.toml"
+kill_switch_max_ms = 1000

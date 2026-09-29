@@ -1,0 +1,50 @@
+name: Broker adapter request
+description: Ask for (or offer to build) support for a broker or venue through the BrokerAdapter interface.
+labels: ["broker-adapter"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        quant-core ships only a generic `BrokerAdapter` interface and a synthetic mock broker. Adapters are written against docs/brokers/writing-a-broker-adapter.md. **Never paste API keys, tokens, account numbers, or real API responses containing account data into this issue.**
+  - type: input
+    id: broker
+    attributes:
+      label: Broker or venue
+    validations:
+      required: true
+  - type: dropdown
+    id: asset
+    attributes:
+      label: Asset class
+      multiple: true
+      options:
+        - Equities
+        - Options
+        - Crypto
+        - Futures
+        - FX
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: api
+    attributes:
+      label: Public API documentation
+      description: Link to the broker's public API docs. Note whether it has a sandbox or paper environment, idempotency keys (client order ids), and limit orders.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Key safety
+      options:
+        - label: The broker supports trade-only keys with withdrawals disabled (root CLAUDE.md rule 9). If not, explain below.
+          required: false
+        - label: I am willing to write or test the adapter.
+          required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+    validations:
+      required: false

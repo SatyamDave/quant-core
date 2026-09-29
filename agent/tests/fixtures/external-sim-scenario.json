@@ -1,0 +1,58 @@
+[
+  {
+    "request_id": "ext-1",
+    "ts_ns": 1767571200000000000,
+    "instrument": "SPY",
+    "best_bid": "500.00",
+    "best_ask": "500.10",
+    "mid": "500.05",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.3 },
+    "signal": { "direction": "up", "probs": [0.05, 0.1, 0.85], "model_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "position": "0",
+    "limits": { "max_position": "10", "max_notional": "100000", "max_order_rate_per_sec": 5, "remaining_daily_loss": "1000" },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  {
+    "request_id": "ext-2",
+    "ts_ns": 1767571201000000000,
+    "instrument": "SPY",
+    "best_bid": "500.10",
+    "best_ask": "500.20",
+    "mid": "500.15",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.3 },
+    "signal": { "direction": "up", "probs": [0.05, 0.1, 0.85], "model_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "position": "1",
+    "limits": { "max_position": "10", "max_notional": "100000", "max_order_rate_per_sec": 5, "remaining_daily_loss": "1000" },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  {
+    "request_id": "ext-3",
+    "ts_ns": 1767571202000000000,
+    "instrument": "SPY",
+    "best_bid": "500.20",
+    "best_ask": "500.30",
+    "mid": "500.25",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.3 },
+    "signal": { "direction": "up", "probs": [0.05, 0.1, 0.85], "model_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "position": "2",
+    "limits": { "max_position": "10", "max_notional": "100000", "max_order_rate_per_sec": 5, "remaining_daily_loss": "1000" },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  },
+  {
+    "request_id": "ext-4",
+    "ts_ns": 1767571203000000000,
+    "instrument": "SPY",
+    "best_bid": "500.30",
+    "best_ask": "500.40",
+    "mid": "500.35",
+    "spread_ticks": 1,
+    "features": { "imbalance": 0.3 },
+    "signal": { "direction": "up", "probs": [0.05, 0.1, 0.85], "model_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    "position": "3",
+    "limits": { "max_position": "10", "max_notional": "100000", "max_order_rate_per_sec": 5, "remaining_daily_loss": "1000" },
+    "allowed_actions": ["buy", "sell", "no_trade"]
+  }
+]
