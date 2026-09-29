@@ -208,7 +208,8 @@ def main() -> None:
     args = ap.parse_args()
     md, block = build(load_json(args.prs), load_json(args.ci))
     STATUS_MD.write_text(md)
-    GUIDE.write_text(inject(GUIDE.read_text(), block))
+    if GUIDE.is_file():  # optional HTML guide; the template ships without one
+        GUIDE.write_text(inject(GUIDE.read_text(), block))
 
 
 if __name__ == "__main__":
