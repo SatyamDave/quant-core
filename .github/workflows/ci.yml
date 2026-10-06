@@ -34,7 +34,7 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
         with:
           workspaces: engine
-      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+      - uses: taiki-e/install-action@861a07ce7084f55488e375df125cdc99bba60eb7 # v2.87.23
         with:
           tool: cargo-deny,cargo-audit
       - run: cargo fmt --all --check
@@ -119,7 +119,7 @@ jobs:
           working-directory: research
           enable-cache: true
           cache-dependency-glob: research/uv.lock
-      - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
+      - uses: taiki-e/install-action@861a07ce7084f55488e375df125cdc99bba60eb7 # v2.87.23
         with:
           tool: just,cargo-deny,cargo-audit
       - run: uv tool install pip-audit==2.10.1
