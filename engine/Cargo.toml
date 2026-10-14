@@ -19,7 +19,7 @@ qc-risk = { path = "crates/risk" }
 qc-replay = { path = "crates/replay" }
 qc-inference = { path = "crates/inference" }
 proptest = "1.11"
-sha2 = "0.10"
+sha2 = "0.11"
 criterion = "0.8"
 serde = { version = "1", features = ["derive"] }
 toml = "1"
